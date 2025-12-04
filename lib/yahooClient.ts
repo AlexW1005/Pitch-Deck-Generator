@@ -3,7 +3,7 @@
  * Backup data source when FMP rate limits are reached
  */
 
-import yahooFinance from 'yahoo-finance2';
+import YahooFinance from 'yahoo-finance2';
 import {
   FMPCompanyProfile,
   FMPIncomeStatement,
@@ -12,6 +12,9 @@ import {
   CompanyData,
   PeerData,
 } from './types';
+
+// Initialize Yahoo Finance instance
+const yahooFinance = new YahooFinance();
 
 /**
  * Convert Yahoo Finance quote to FMP-like profile
@@ -206,7 +209,7 @@ export async function fetchYahooCompanyData(symbol: string): Promise<CompanyData
   
   try {
     // Fetch quote first
-    const quote: any = await (yahooFinance as any).quote(upperSymbol);
+    const quote: any = await yahooFinance.quote(upperSymbol);
 
     if (!quote) {
       throw new Error(`Company not found: ${upperSymbol}`);
@@ -215,7 +218,7 @@ export async function fetchYahooCompanyData(symbol: string): Promise<CompanyData
     // Try to get additional summary data
     let summary: any = null;
     try {
-      summary = await (yahooFinance as any).quoteSummary(upperSymbol, {
+      summary = await yahooFinance.quoteSummary(upperSymbol, {
         modules: ['assetProfile', 'summaryDetail', 'financialData'],
       });
     } catch {
@@ -225,7 +228,7 @@ export async function fetchYahooCompanyData(symbol: string): Promise<CompanyData
     // Try to get historical prices
     let history: any[] = [];
     try {
-      history = await (yahooFinance as any).historical(upperSymbol, {
+      history = await yahooFinance.historical(upperSymbol, {
         period1: new Date(Date.now() - 5 * 365 * 24 * 60 * 60 * 1000), // 5 years ago
         period2: new Date(),
       });
@@ -265,7 +268,7 @@ export async function fetchYahooCompanyData(symbol: string): Promise<CompanyData
  */
 export async function searchYahooCompanies(query: string): Promise<{ symbol: string; name: string }[]> {
   try {
-    const results: any = await (yahooFinance as any).search(query);
+    const results: any = await yahooFinance.search(query);
     return (results.quotes || [])
       .filter((q: any) => q.quoteType === 'EQUITY')
       .slice(0, 10)
