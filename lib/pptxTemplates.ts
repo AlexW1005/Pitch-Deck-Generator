@@ -812,20 +812,20 @@ export class PitchDeckBuilder {
 
     const exchangeName = profile?.exchangeShortName || (profile as any)?.exchange || 'N/A';
     const corpData = [
-      ['Ticker', `${profile?.symbol || 'N/A'} (${exchangeName})`],
-      ['Sector', profile?.sector || 'N/A'],
-      ['Industry', profile?.industry || 'N/A'],
-      ['Sub-Industry', profile?.industry || 'N/A'],
-      ['HQ Location', `${profile?.city || 'N/A'}, ${profile?.state || ''}`],
-      ['Country', profile?.country || 'N/A'],
-      ['Website', profile?.website?.replace('https://', '').substring(0, 25) || 'N/A'],
+      ['Ticker', safeText(`${profile?.symbol || 'N/A'} (${exchangeName})`)],
+      ['Sector', safeText(profile?.sector || 'N/A')],
+      ['Industry', safeText(profile?.industry || 'N/A')],
+      ['Sub-Industry', safeText(profile?.industry || 'N/A')],
+      ['HQ Location', safeText(`${profile?.city || 'N/A'}, ${profile?.state || ''}`)],
+      ['Country', safeText(profile?.country || 'N/A')],
+      ['Website', safeText(profile?.website?.replace('https://', '').substring(0, 25) || 'N/A')],
       ['Fiscal Year End', 'December'],
     ];
 
     corpData.forEach((row, i) => {
       const y = 0.85 + (i * 0.24);
-      slide.addText(row[0], { x: 0.35, y, w: 1.1, h: 0.22, fontSize: 7, color: '6b7c8a', fontFace: this.theme.fontFamily.body });
-      slide.addText(row[1], { x: 1.45, y, w: 1.8, h: 0.22, fontSize: 7, bold: true, color: this.theme.textColor, fontFace: this.theme.fontFamily.body });
+      slide.addText(safeText(row[0]), { x: 0.35, y, w: 1.1, h: 0.22, fontSize: 7, color: '6b7c8a', fontFace: this.theme.fontFamily.body });
+      slide.addText(safeText(row[1]), { x: 1.45, y, w: 1.8, h: 0.22, fontSize: 7, bold: true, color: this.theme.textColor, fontFace: this.theme.fontFamily.body });
     });
 
     // COLUMN 2 - Management & Ownership
@@ -849,10 +849,10 @@ export class PitchDeckBuilder {
     });
 
     const mgmtData = [
-      ['CEO', profile?.ceo || 'N/A'],
-      ['Employees', profile?.fullTimeEmployees && !isNaN(parseInt(profile.fullTimeEmployees)) ? parseInt(profile.fullTimeEmployees).toLocaleString() : 'N/A'],
-      ['IPO Date', profile?.ipoDate || 'N/A'],
-      ['Shares Out', profile?.mktCap && profile?.price && profile.price > 0 ? `${(profile.mktCap / profile.price / 1e9).toFixed(2)}B` : 'N/A'],
+      ['CEO', safeText(profile?.ceo || 'N/A')],
+      ['Employees', safeText(profile?.fullTimeEmployees && !isNaN(parseInt(profile.fullTimeEmployees)) ? parseInt(profile.fullTimeEmployees).toLocaleString() : 'N/A')],
+      ['IPO Date', safeText(profile?.ipoDate || 'N/A')],
+      ['Shares Out', safeText(profile?.mktCap && profile?.price && profile.price > 0 ? `${(profile.mktCap / profile.price / 1e9).toFixed(2)}B` : 'N/A')],
       ['Float', 'N/A'],
       ['Insider Own %', 'N/A'],
       ['Inst. Own %', 'N/A'],
@@ -861,8 +861,8 @@ export class PitchDeckBuilder {
 
     mgmtData.forEach((row, i) => {
       const y = 0.85 + (i * 0.24);
-      slide.addText(row[0], { x: 3.45, y, w: 1.2, h: 0.22, fontSize: 7, color: '6b7c8a', fontFace: this.theme.fontFamily.body });
-      slide.addText(row[1], { x: 4.65, y, w: 1.7, h: 0.22, fontSize: 7, bold: true, color: this.theme.textColor, fontFace: this.theme.fontFamily.body });
+      slide.addText(safeText(row[0]), { x: 3.45, y, w: 1.2, h: 0.22, fontSize: 7, color: '6b7c8a', fontFace: this.theme.fontFamily.body });
+      slide.addText(safeText(row[1]), { x: 4.65, y, w: 1.7, h: 0.22, fontSize: 7, bold: true, color: this.theme.textColor, fontFace: this.theme.fontFamily.body });
     });
 
     // COLUMN 3 - Trading Data
@@ -897,20 +897,20 @@ export class PitchDeckBuilder {
     }
 
     const tradingData = [
-      ['Stock Price', profile?.price ? `$${Number(profile.price).toFixed(2)}` : 'N/A'],
-      ['Market Cap', profile?.mktCap ? formatLargeNumber(profile.mktCap) : 'N/A'],
-      ['52-Week High', weekHigh],
-      ['52-Week Low', weekLow],
-      ['Avg Volume', profile?.volAvg ? `${(Number(profile.volAvg) / 1e6).toFixed(1)}M` : 'N/A'],
-      ['Beta', profile?.beta ? Number(profile.beta).toFixed(2) : 'N/A'],
-      ['Div Yield', ratios?.dividendYieldTTM ? `${(Number(ratios.dividendYieldTTM) * 100).toFixed(2)}%` : 'N/A'],
-      ['P/E (TTM)', ratios?.peRatioTTM ? `${Number(ratios.peRatioTTM).toFixed(1)}x` : 'N/A'],
+      ['Stock Price', safeText(profile?.price ? `$${Number(profile.price).toFixed(2)}` : 'N/A')],
+      ['Market Cap', safeText(profile?.mktCap ? formatLargeNumber(profile.mktCap) : 'N/A')],
+      ['52-Week High', safeText(weekHigh)],
+      ['52-Week Low', safeText(weekLow)],
+      ['Avg Volume', safeText(profile?.volAvg ? `${(Number(profile.volAvg) / 1e6).toFixed(1)}M` : 'N/A')],
+      ['Beta', safeText(profile?.beta ? Number(profile.beta).toFixed(2) : 'N/A')],
+      ['Div Yield', safeText(ratios?.dividendYieldTTM ? `${(Number(ratios.dividendYieldTTM) * 100).toFixed(2)}%` : 'N/A')],
+      ['P/E (TTM)', safeText(ratios?.peRatioTTM ? `${Number(ratios.peRatioTTM).toFixed(1)}x` : 'N/A')],
     ];
 
     tradingData.forEach((row, i) => {
       const y = 0.85 + (i * 0.24);
-      slide.addText(row[0], { x: 6.55, y, w: 1.2, h: 0.22, fontSize: 7, color: '6b7c8a', fontFace: this.theme.fontFamily.body });
-      slide.addText(row[1], { x: 7.75, y, w: 1.7, h: 0.22, fontSize: 7, bold: true, color: this.theme.textColor, fontFace: this.theme.fontFamily.body });
+      slide.addText(safeText(row[0]), { x: 6.55, y, w: 1.2, h: 0.22, fontSize: 7, color: '6b7c8a', fontFace: this.theme.fontFamily.body });
+      slide.addText(safeText(row[1]), { x: 7.75, y, w: 1.7, h: 0.22, fontSize: 7, bold: true, color: this.theme.textColor, fontFace: this.theme.fontFamily.body });
     });
 
     // BUSINESS DESCRIPTION - Full width bottom section
@@ -1958,15 +1958,15 @@ export class PitchDeckBuilder {
     });
 
     const priceBoxes = [
-      { label: 'CURRENT PRICE', value: currentPrice > 0 ? `$${currentPrice.toFixed(2)}` : 'N/A' },
-      { label: 'TARGET PRICE', value: targetPrice ? `$${targetPrice.toFixed(2)}` : 'TBD' },
-      { label: 'UPSIDE/DOWNSIDE', value: upside ? `${upside >= 0 ? '+' : ''}${upside.toFixed(1)}%` : 'TBD' },
-      { label: 'TIME HORIZON', value: `${this.formData.timeHorizon} Months` },
+      { label: 'CURRENT PRICE', value: safeText(currentPrice > 0 ? `$${currentPrice.toFixed(2)}` : 'N/A') },
+      { label: 'TARGET PRICE', value: safeText(targetPrice ? `$${targetPrice.toFixed(2)}` : 'TBD') },
+      { label: 'UPSIDE/DOWNSIDE', value: safeText(upside ? `${upside >= 0 ? '+' : ''}${upside.toFixed(1)}%` : 'TBD') },
+      { label: 'TIME HORIZON', value: safeText(`${this.formData.timeHorizon} Months`) },
     ];
 
     priceBoxes.forEach((box, i) => {
       const x = 0.7 + (i * 2.25);
-      slide.addText(box.label, {
+      slide.addText(safeText(box.label), {
         x,
         y: 0.95,
         w: 2,
@@ -1975,7 +1975,7 @@ export class PitchDeckBuilder {
         color: '9ca8b3',
         fontFace: this.theme.fontFamily.body,
       });
-      slide.addText(box.value, {
+      slide.addText(safeText(box.value), {
         x,
         y: 1.15,
         w: 2,
@@ -2238,7 +2238,7 @@ export class PitchDeckBuilder {
         h: 0.25,
         fill: { color: 'e8ecef' },
       });
-      slide.addText(item.category, {
+      slide.addText(safeText(item.category), {
         x: 0.55,
         y: y + 0.07,
         w: 1.4,
@@ -2251,7 +2251,7 @@ export class PitchDeckBuilder {
       });
 
       // Risk text
-      slide.addText(item.risk, {
+      slide.addText(safeText(item.risk), {
         x: 0.6,
         y: y + 0.32,
         w: 4,
@@ -2262,7 +2262,7 @@ export class PitchDeckBuilder {
       });
 
       // Mitigant text
-      slide.addText(safeText(`✓ ${item.mitigant}`), {
+      slide.addText(safeText(`> ${item.mitigant}`), {
         x: 5,
         y: y + 0.15,
         w: 4.4,
