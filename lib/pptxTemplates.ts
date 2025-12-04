@@ -1220,10 +1220,13 @@ export class PitchDeckBuilder {
       { text: 'Metric', options: { bold: true, fill: { color: this.theme.primaryColor }, color: 'ffffff' } },
     ];
 
-    const sortedIncome = [...income].sort((a, b) => parseInt(b.calendarYear) - parseInt(a.calendarYear)).slice(0, 4);
+    const sortedIncome = [...income]
+      .filter((s) => s && s.calendarYear)
+      .sort((a, b) => parseInt(b.calendarYear || '0') - parseInt(a.calendarYear || '0'))
+      .slice(0, 4);
     sortedIncome.forEach((stmt) => {
       headers.push({
-        text: `FY${stmt.calendarYear}`,
+        text: `FY${stmt.calendarYear || 'N/A'}`,
         options: { bold: true, fill: { color: this.theme.primaryColor }, color: 'ffffff', align: 'right' },
       });
     });
@@ -1305,7 +1308,9 @@ export class PitchDeckBuilder {
       return;
     }
 
-    const sortedIncome = [...income].sort((a, b) => parseInt(a.calendarYear) - parseInt(b.calendarYear));
+    const sortedIncome = [...income]
+      .filter((s) => s && s.calendarYear)
+      .sort((a, b) => parseInt(a.calendarYear || '0') - parseInt(b.calendarYear || '0'));
 
     // Headers
     const headers: PptxGenJS.TableCell[] = [
@@ -1313,7 +1318,7 @@ export class PitchDeckBuilder {
     ];
     sortedIncome.forEach((stmt) => {
       headers.push({
-        text: `FY${stmt.calendarYear}`,
+        text: `FY${stmt.calendarYear || 'N/A'}`,
         options: { bold: true, fill: { color: this.theme.primaryColor }, color: 'ffffff', align: 'right' },
       });
     });
@@ -1403,7 +1408,7 @@ export class PitchDeckBuilder {
   // ============================================
   private addPeersComps(): void {
     const slide = this.pptx.addSlide();
-    const peers = this.companyData.peersData;
+    const peers = this.companyData.peersData || [];
     const profile = this.companyData.profile;
     const ratios = this.companyData.ratiosTTM;
 
