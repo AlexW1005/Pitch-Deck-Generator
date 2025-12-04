@@ -17,6 +17,27 @@ import {
 const yahooFinance = new YahooFinance();
 
 /**
+ * Fetch image and convert to base64 data URL
+ */
+async function fetchImageAsBase64(url: string): Promise<string | null> {
+  try {
+    const response = await fetch(url, { 
+      headers: { 'User-Agent': 'Mozilla/5.0' },
+      signal: AbortSignal.timeout(5000) 
+    });
+    if (!response.ok) return null;
+    
+    const buffer = await response.arrayBuffer();
+    const base64 = Buffer.from(buffer).toString('base64');
+    const contentType = response.headers.get('content-type') || 'image/png';
+    return `data:${contentType};base64,${base64}`;
+  } catch (error) {
+    console.log('[Yahoo] Failed to fetch logo:', error);
+    return null;
+  }
+}
+
+/**
  * Convert Yahoo Finance quote to FMP-like profile
  */
 function convertToFMPProfile(quote: any, summary: any): FMPCompanyProfile {
@@ -240,6 +261,22 @@ export async function fetchYahooCompanyData(symbol: string): Promise<CompanyData
     const incomeStatements: FMPIncomeStatement[] = [];
     const historicalPrices = convertToFMPHistoricalPrices(history || []);
     const ratiosTTM = convertToFMPRatios(quote, summary);
+
+    // Try to fetch logo as base64
+    const website = summary?.assetProfile?.website || '';
+    if (website) {
+      try {
+        const domain = new URL(website).hostname.replace('www.', '');
+        const logoUrl = `https://logo.clearbit.com/${domain}`;
+        const logoBase64 = await fetchImageAsBase64(logoUrl);
+        if (logoBase64) {
+          profile.image = logoBase64;
+          console.log(`[Yahoo Finance] Logo fetched for ${upperSymbol}`);
+        }
+      } catch (e) {
+        console.log('[Yahoo Finance] Could not fetch logo');
+      }
+    }
 
     // Get similar stocks as peers
     const peers: string[] = [];

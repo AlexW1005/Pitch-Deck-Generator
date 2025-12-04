@@ -164,25 +164,36 @@ export class PitchDeckBuilder {
       fill: { color: '1e3354' },
     });
 
-    // Company Logo placeholder (external images cause issues in pptxgenjs)
-    slide.addShape('rect', {
-      x: 6.8,
-      y: 1.5,
-      w: 2.4,
-      h: 2.4,
-      fill: { color: '2a4a6a' },
-    });
-    slide.addText(safeText(profile?.symbol || 'LOGO'), {
-      x: 6.8,
-      y: 2.4,
-      w: 2.4,
-      h: 0.6,
-      fontSize: 24,
-      bold: true,
-      color: '6b8eb8',
-      fontFace: this.theme.fontFamily.body,
-      align: 'center',
-    });
+    // Company Logo - use base64 if available, otherwise show placeholder
+    if (profile?.image && profile.image.startsWith('data:')) {
+      slide.addImage({
+        data: profile.image,
+        x: 6.8,
+        y: 1.5,
+        w: 2.4,
+        h: 2.4,
+      });
+    } else {
+      // Placeholder box with ticker symbol
+      slide.addShape('rect', {
+        x: 6.8,
+        y: 1.5,
+        w: 2.4,
+        h: 2.4,
+        fill: { color: '2a4a6a' },
+      });
+      slide.addText(safeText(profile?.symbol || 'LOGO'), {
+        x: 6.8,
+        y: 2.4,
+        w: 2.4,
+        h: 0.6,
+        fontSize: 24,
+        bold: true,
+        color: '6b8eb8',
+        fontFace: this.theme.fontFamily.body,
+        align: 'center',
+      });
+    }
 
     // Photo placeholder text on right
     slide.addText('[ Company HQ / Product Image ]', {
@@ -969,27 +980,35 @@ export class PitchDeckBuilder {
       lineSpacingMultiple: 1.15,
     });
 
-    // COMPANY IMAGE PLACEHOLDER - center bottom
-    slide.addShape('rect', {
-      x: 3.3,
-      y: 4.55,
-      w: 3.2,
-      h: 0.75,
-      fill: { color: 'e8ecef' },
-    });
-
-    // Logo placeholder (external images removed to avoid loading errors)
-    slide.addText(safeText('[ Add company logo ]'), {
-      x: 3.3,
-      y: 4.75,
-      w: 3.2,
-      h: 0.3,
-      fontSize: 7,
-      italic: true,
-      color: '9ca8b3',
-      fontFace: this.theme.fontFamily.body,
-      align: 'center',
-    });
+    // COMPANY IMAGE - center bottom
+    if (profile?.image && profile.image.startsWith('data:')) {
+      slide.addImage({
+        data: profile.image,
+        x: 3.8,
+        y: 4.5,
+        w: 0.8,
+        h: 0.8,
+      });
+    } else {
+      slide.addShape('rect', {
+        x: 3.3,
+        y: 4.55,
+        w: 3.2,
+        h: 0.75,
+        fill: { color: 'e8ecef' },
+      });
+      slide.addText(safeText('[ Add company logo ]'), {
+        x: 3.3,
+        y: 4.75,
+        w: 3.2,
+        h: 0.3,
+        fontSize: 7,
+        italic: true,
+        color: '9ca8b3',
+        fontFace: this.theme.fontFamily.body,
+        align: 'center',
+      });
+    }
 
     // COMPETITIVE POSITION - bottom right
     slide.addText('COMPETITIVE MOATS', {
