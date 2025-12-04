@@ -22,22 +22,38 @@ import {
 const FMP_BASE_URL = 'https://financialmodelingprep.com/stable';
 
 /**
- * Fetch image and convert to base64 data URL for embedding in PPTX
+ * Fetch logo as PNG and convert to base64 data URL for embedding in PPTX
+ * Forces PNG format for consistent layout in PowerPoint
  */
-async function fetchImageAsBase64(url: string): Promise<string | null> {
+async function fetchLogoAsPng(url: string): Promise<string | null> {
   try {
-    const response = await fetch(url, { 
-      headers: { 'User-Agent': 'Mozilla/5.0' },
+    // Add format=png to Clearbit URLs for consistent PNG output
+    const pngUrl = url.includes('logo.clearbit.com') 
+      ? `${url}?format=png&size=256` 
+      : url;
+    
+    const response = await fetch(pngUrl, { 
+      headers: { 
+        'User-Agent': 'Mozilla/5.0',
+        'Accept': 'image/png, image/*'
+      },
       signal: AbortSignal.timeout(5000) 
     });
+    
     if (!response.ok) return null;
     
+    const contentType = response.headers.get('content-type') || '';
+    // Only accept actual images
+    if (!contentType.includes('image/')) {
+      console.log('[Logo] Invalid content type:', contentType);
+      return null;
+    }
+    
     const buffer = await response.arrayBuffer();
-    const base64 = Buffer.from(buffer).toString('base64');
-    const contentType = response.headers.get('content-type') || 'image/png';
-    return `data:${contentType};base64,${base64}`;
+    // Force PNG content type for PowerPoint compatibility
+    return `data:image/png;base64,${Buffer.from(buffer).toString('base64')}`;
   } catch (error) {
-    console.log('[FMP] Failed to fetch logo:', error);
+    console.log('[Logo] Failed to fetch:', error);
     return null;
   }
 }
@@ -359,7 +375,7 @@ export async function fetchAllCompanyData(symbol: string): Promise<CompanyData> 
   // Try to convert logo to base64 for reliable PPTX embedding
   if (profile.image && profile.image.startsWith('http')) {
     try {
-      const logoBase64 = await fetchImageAsBase64(profile.image);
+      const logoBase64 = await fetchLogoAsPng(profile.image);
       if (logoBase64) {
         profile.image = logoBase64;
         console.log(`[FMP] Logo converted to base64 for ${upperSymbol}`);
