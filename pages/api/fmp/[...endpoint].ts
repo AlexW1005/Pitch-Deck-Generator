@@ -36,6 +36,8 @@ export default async function handler(
 
   const apiKey = process.env.FMP_API_KEY;
   
+  console.log('[FMP Proxy] API Key present:', !!apiKey, 'Length:', apiKey?.length || 0);
+  
   if (!apiKey) {
     return res.status(500).json({ 
       error: 'API key not configured',
@@ -95,6 +97,8 @@ export default async function handler(
     const axiosError = error as AxiosError<{ message?: string }>;
     
     console.error('[FMP Proxy] Error:', axiosError.message);
+    console.error('[FMP Proxy] Response status:', axiosError.response?.status);
+    console.error('[FMP Proxy] Response data:', JSON.stringify(axiosError.response?.data));
 
     if (axiosError.response) {
       const status = axiosError.response.status;
@@ -103,7 +107,7 @@ export default async function handler(
       if (status === 401) {
         return res.status(401).json({
           error: 'Invalid API key',
-          message: 'Please check your FMP_API_KEY configuration',
+          message: `Please check your FMP_API_KEY. Status: ${status}. API Response: ${JSON.stringify(axiosError.response.data)}`,
         });
       }
 
