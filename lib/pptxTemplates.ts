@@ -173,41 +173,25 @@ export class PitchDeckBuilder {
       fill: { color: this.theme.accentColor },
     });
 
-    // Company Logo - centered on right side
+    // Company Logo - centered on right side (no background, just the PNG logo)
     if (profile?.image && profile.image.startsWith('data:')) {
-      // White background circle for logo
-      slide.addShape('ellipse', {
-        x: 6.75,
-        y: 1.3,
-        w: 1.9,
-        h: 1.9,
-        fill: { color: 'ffffff' },
-      });
       slide.addImage({
         data: profile.image,
-        x: 6.95,
-        y: 1.5,
-        w: 1.5,
-        h: 1.5,
+        x: 6.6,
+        y: 1.2,
+        w: 2.0,
+        h: 2.0,
       });
     } else {
-      // Elegant placeholder
-      slide.addShape('ellipse', {
-        x: 6.75,
-        y: 1.3,
-        w: 1.9,
-        h: 1.9,
-        fill: { color: '2d3e50' },
-        line: { color: '4a5d70', width: 1 },
-      });
+      // Minimal placeholder - just ticker text, no background shapes
       slide.addText(safeText(profile?.symbol || ''), {
-        x: 6.75,
-        y: 1.9,
-        w: 1.9,
-        h: 0.7,
-        fontSize: 20,
+        x: 6.5,
+        y: 1.8,
+        w: 2.2,
+        h: 0.8,
+        fontSize: 28,
         bold: true,
-        color: '8fa8c2',
+        color: '6a8ab0',
         fontFace: this.theme.fontFamily.body,
         align: 'center',
       });
