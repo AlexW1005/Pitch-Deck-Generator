@@ -665,16 +665,17 @@ export class PitchDeckBuilder {
       `Attractive valuation at ${ratios?.peRatioTTM ? ratios.peRatioTTM.toFixed(1) + 'x' : 'current'} P/E vs. historical average and peers`,
     ];
 
-    slide.addText(thesisBullets.join('\n'), {
-      x: 0.4,
-      y: 2.9,
-      w: 9,
-      h: 0.8,
-      fontSize: 8,
-      color: this.theme.secondaryColor,
-      fontFace: this.theme.fontFamily.body,
-      bullet: { type: 'bullet' },
-      lineSpacingMultiple: 1.2,
+    // Add each bullet point separately to avoid pptxgenjs text parsing issues
+    thesisBullets.forEach((bullet, i) => {
+      slide.addText(`• ${bullet}`, {
+        x: 0.4,
+        y: 2.9 + (i * 0.25),
+        w: 9,
+        h: 0.25,
+        fontSize: 8,
+        color: this.theme.secondaryColor,
+        fontFace: this.theme.fontFamily.body,
+      });
     });
 
     // COMPANY SNAPSHOT - Bottom section
@@ -743,16 +744,17 @@ export class PitchDeckBuilder {
       'Regulatory and compliance considerations',
     ];
 
-    slide.addText(risks.join('\n'), {
-      x: 5,
-      y: 4.05,
-      w: 4.5,
-      h: 0.9,
-      fontSize: 7,
-      color: this.theme.secondaryColor,
-      fontFace: this.theme.fontFamily.body,
-      bullet: { type: 'bullet' },
-      lineSpacingMultiple: 1.25,
+    // Add each risk bullet separately
+    risks.forEach((risk, i) => {
+      slide.addText(`• ${risk}`, {
+        x: 5,
+        y: 4.05 + (i * 0.2),
+        w: 4.5,
+        h: 0.2,
+        fontSize: 7,
+        color: this.theme.secondaryColor,
+        fontFace: this.theme.fontFamily.body,
+      });
     });
 
     this.addFooter(slide);
@@ -1078,16 +1080,17 @@ export class PitchDeckBuilder {
       'Growth drivers: [User to add industry-specific growth catalysts]',
     ];
 
-    slide.addText(industryBullets.join('\n'), {
-      x: 0.5,
-      y: 2.2,
-      w: 9,
-      h: 2.5,
-      fontSize: 11,
-      color: this.theme.secondaryColor,
-      fontFace: this.theme.fontFamily.body,
-      bullet: { type: 'bullet' },
-      lineSpacingMultiple: 1.5,
+    // Add each bullet separately
+    industryBullets.forEach((bullet, i) => {
+      slide.addText(`• ${bullet}`, {
+        x: 0.5,
+        y: 2.2 + (i * 0.45),
+        w: 9,
+        h: 0.4,
+        fontSize: 11,
+        color: this.theme.secondaryColor,
+        fontFace: this.theme.fontFamily.body,
+      });
     });
 
     slide.addText(
