@@ -625,7 +625,7 @@ export class PitchDeckBuilder {
       fontSize: 8,
       color: this.theme.secondaryColor,
       fontFace: this.theme.fontFamily.body,
-      bullet: { type: 'bullet', color: this.theme.accentColor },
+      bullet: { type: 'bullet' },
       lineSpacingMultiple: 1.2,
     });
 
@@ -703,7 +703,7 @@ export class PitchDeckBuilder {
       fontSize: 7,
       color: this.theme.secondaryColor,
       fontFace: this.theme.fontFamily.body,
-      bullet: { type: 'bullet', color: 'dc2626' },
+      bullet: { type: 'bullet' },
       lineSpacingMultiple: 1.25,
     });
 
