@@ -73,14 +73,14 @@ function validateTableRows(rows: any[][]): any[][] {
 
 export function createLazardTheme(accentColor: string): PPTXTheme {
   return {
-    primaryColor: '1a2744',
-    secondaryColor: '3d4f5f',
+    primaryColor: '0d1b2a', // Deep navy
+    secondaryColor: '1b263b', // Slightly lighter navy
     accentColor: accentColor.replace('#', ''),
-    textColor: '1a2744',
-    backgroundColor: 'ffffff',
+    textColor: '1b263b',
+    backgroundColor: 'f8fafc',
     fontFamily: {
-      heading: 'Georgia',
-      body: 'Arial',
+      heading: 'Calibri Light',
+      body: 'Calibri',
     },
   };
 }
@@ -140,161 +140,137 @@ export class PitchDeckBuilder {
   }
 
   // ============================================
-  // Slide 1: Cover - Lazard Style with Images
+  // Slide 1: Cover - Clean Modern Style
   // ============================================
   private addCoverSlide(): void {
     const slide = this.pptx.addSlide();
     const profile = this.companyData.profile;
 
-    // LEFT SIDE - Dark background with text
+    // Full dark background
     slide.addShape('rect', {
       x: 0,
       y: 0,
-      w: 6,
+      w: '100%',
       h: '100%',
       fill: { color: this.theme.primaryColor },
     });
 
-    // RIGHT SIDE - Image area (lighter for photo placeholder)
+    // Subtle gradient overlay on right
     slide.addShape('rect', {
-      x: 6,
+      x: 5.5,
       y: 0,
-      w: 4,
+      w: 4.5,
       h: '100%',
-      fill: { color: '1e3354' },
+      fill: { color: this.theme.secondaryColor },
     });
 
-    // Company Logo - use base64 if available, otherwise show placeholder
+    // Top accent line
+    slide.addShape('rect', {
+      x: 0,
+      y: 0,
+      w: '100%',
+      h: 0.06,
+      fill: { color: this.theme.accentColor },
+    });
+
+    // Company Logo - centered on right side
     if (profile?.image && profile.image.startsWith('data:')) {
+      // White background circle for logo
+      slide.addShape('ellipse', {
+        x: 6.75,
+        y: 1.3,
+        w: 1.9,
+        h: 1.9,
+        fill: { color: 'ffffff' },
+      });
       slide.addImage({
         data: profile.image,
-        x: 6.8,
+        x: 6.95,
         y: 1.5,
-        w: 2.4,
-        h: 2.4,
+        w: 1.5,
+        h: 1.5,
       });
     } else {
-      // Placeholder box with ticker symbol
-      slide.addShape('rect', {
-        x: 6.8,
-        y: 1.5,
-        w: 2.4,
-        h: 2.4,
-        fill: { color: '2a4a6a' },
+      // Elegant placeholder
+      slide.addShape('ellipse', {
+        x: 6.75,
+        y: 1.3,
+        w: 1.9,
+        h: 1.9,
+        fill: { color: '2d3e50' },
+        line: { color: '4a5d70', width: 1 },
       });
-      slide.addText(safeText(profile?.symbol || 'LOGO'), {
-        x: 6.8,
-        y: 2.4,
-        w: 2.4,
-        h: 0.6,
-        fontSize: 24,
+      slide.addText(safeText(profile?.symbol || ''), {
+        x: 6.75,
+        y: 1.9,
+        w: 1.9,
+        h: 0.7,
+        fontSize: 20,
         bold: true,
-        color: '6b8eb8',
+        color: '8fa8c2',
         fontFace: this.theme.fontFamily.body,
         align: 'center',
       });
     }
 
-    // Photo placeholder text on right
-    slide.addText('[ Company HQ / Product Image ]', {
-      x: 6.3,
-      y: 4.2,
-      w: 3.2,
-      h: 0.4,
-      fontSize: 8,
-      italic: true,
-      color: '5a7a9a',
-      fontFace: this.theme.fontFamily.body,
-      align: 'center',
-    });
-
-    // Accent bar at top
-    slide.addShape('rect', {
-      x: 0,
-      y: 0,
-      w: '100%',
-      h: 0.12,
-      fill: { color: this.theme.accentColor },
-    });
-
-    // Rating Badge - top right of left section
-    const ratingColor = this.getRatingColor(this.formData.rating);
-    slide.addShape('rect', {
-      x: 4.3,
-      y: 0.35,
-      w: 1.4,
-      h: 0.55,
-      fill: { color: ratingColor },
-    });
-    slide.addText(this.formData.rating.toUpperCase(), {
-      x: 4.3,
-      y: 0.38,
-      w: 1.4,
-      h: 0.5,
-      fontSize: 14,
-      bold: true,
-      color: 'ffffff',
-      fontFace: this.theme.fontFamily.body,
-      align: 'center',
-    });
-
-    // BUY-SIDE EQUITY RESEARCH header
-    slide.addText('BUY-SIDE EQUITY RESEARCH', {
-      x: 0.5,
-      y: 0.5,
-      w: 3.5,
-      h: 0.3,
-      fontSize: 9,
-      color: '9ca8b3',
-      fontFace: this.theme.fontFamily.body,
-      bold: true,
-    });
-
-    // Company Name - large
-    slide.addText(profile?.companyName || 'Company Name', {
-      x: 0.5,
-      y: 1.2,
-      w: 5.3,
-      h: 0.9,
-      fontSize: 36,
+    // Company Name - large, prominent
+    slide.addText(safeText(profile?.companyName || 'Company Name'), {
+      x: 0.6,
+      y: 0.9,
+      w: 4.8,
+      h: 0.8,
+      fontSize: 32,
       bold: true,
       color: 'ffffff',
       fontFace: this.theme.fontFamily.heading,
     });
 
-    // Ticker and Exchange
+    // Ticker | Exchange
     const exchangeName = profile?.exchangeShortName || (profile as any)?.exchange || '';
-    slide.addText(safeText(`${profile?.symbol || ''} : ${exchangeName}`), {
-      x: 0.5,
-      y: 2.05,
-      w: 5.3,
-      h: 0.35,
-      fontSize: 16,
-      color: 'e8ecef',
-      fontFace: this.theme.fontFamily.body,
-    });
-
-    // Sector/Industry
-    slide.addText(safeText(`${profile?.sector || ''} | ${profile?.industry || ''}`), {
-      x: 0.5,
-      y: 2.4,
-      w: 5.3,
+    slide.addText(safeText(`${profile?.symbol || ''} | ${exchangeName}`), {
+      x: 0.6,
+      y: 1.65,
+      w: 4.8,
       h: 0.3,
-      fontSize: 11,
-      color: '9ca8b3',
+      fontSize: 14,
+      color: 'c8d4e0',
       fontFace: this.theme.fontFamily.body,
     });
 
-    // Divider line
-    slide.addShape('rect', {
-      x: 0.5,
-      y: 2.85,
-      w: 1.5,
-      h: 0.03,
-      fill: { color: this.theme.accentColor },
+    // Sector | Industry
+    slide.addText(safeText(`${profile?.sector || ''} | ${profile?.industry || ''}`), {
+      x: 0.6,
+      y: 1.95,
+      w: 4.8,
+      h: 0.25,
+      fontSize: 10,
+      color: '7a8a9a',
+      fontFace: this.theme.fontFamily.body,
     });
 
-    // Key stats in 2x3 grid
+    // Rating Badge
+    const ratingColor = this.getRatingColor(this.formData.rating);
+    slide.addShape('roundRect', {
+      x: 0.6,
+      y: 2.35,
+      w: 1.0,
+      h: 0.35,
+      fill: { color: ratingColor },
+      rectRadius: 0.04,
+    });
+    slide.addText(this.formData.rating.toUpperCase(), {
+      x: 0.6,
+      y: 2.37,
+      w: 1.0,
+      h: 0.32,
+      fontSize: 10,
+      bold: true,
+      color: 'ffffff',
+      fontFace: this.theme.fontFamily.body,
+      align: 'center',
+    });
+
+    // Key metrics - clean 2x2 grid
     const mktCap = profile?.mktCap ? formatLargeNumber(profile.mktCap) : 'N/A';
     const priceVal = profile?.price || 0;
     const price = priceVal > 0 ? `$${priceVal.toFixed(2)}` : 'N/A';
@@ -303,75 +279,116 @@ export class PitchDeckBuilder {
     const upside = priceVal > 0 && targetVal > 0
       ? `${(((targetVal - priceVal) / priceVal) * 100).toFixed(0)}%`
       : 'N/A';
-    
-    const statsGrid = [
-      [{ label: 'PRICE', value: price }, { label: 'TARGET', value: target }],
-      [{ label: 'MARKET CAP', value: mktCap }, { label: 'UPSIDE', value: upside }],
-      [{ label: 'HORIZON', value: `${this.formData.timeHorizon} Months` }, { label: 'BETA', value: profile?.beta?.toFixed(2) || 'N/A' }],
+
+    const metrics = [
+      { label: 'Current Price', value: price },
+      { label: 'Target Price', value: target },
+      { label: 'Market Cap', value: mktCap },
+      { label: 'Upside', value: upside },
     ];
 
-    statsGrid.forEach((row, rowIdx) => {
-      row.forEach((stat, colIdx) => {
-        const x = 0.5 + (colIdx * 2.6);
-        const y = 3.05 + (rowIdx * 0.6);
-        
-        slide.addText(stat.label, {
-          x,
-          y,
-          w: 2.4,
-          h: 0.22,
-          fontSize: 7,
-          color: '7a8a9a',
-          fontFace: this.theme.fontFamily.body,
-        });
-        slide.addText(stat.value, {
-          x,
-          y: y + 0.2,
-          w: 2.4,
-          h: 0.35,
-          fontSize: 14,
-          bold: true,
-          color: 'ffffff',
-          fontFace: this.theme.fontFamily.body,
-        });
+    metrics.forEach((metric, idx) => {
+      const col = idx % 2;
+      const row = Math.floor(idx / 2);
+      const x = 0.6 + (col * 2.3);
+      const y = 2.95 + (row * 0.7);
+
+      slide.addText(metric.label, {
+        x,
+        y,
+        w: 2.1,
+        h: 0.2,
+        fontSize: 8,
+        color: '6b7b8b',
+        fontFace: this.theme.fontFamily.body,
+      });
+      slide.addText(safeText(metric.value), {
+        x,
+        y: y + 0.18,
+        w: 2.1,
+        h: 0.4,
+        fontSize: 18,
+        bold: true,
+        color: 'ffffff',
+        fontFace: this.theme.fontFamily.body,
       });
     });
 
-    // Bottom info bar
+    // Right side info
+    slide.addText('HEADQUARTERS', {
+      x: 5.7,
+      y: 3.3,
+      w: 3.6,
+      h: 0.2,
+      fontSize: 7,
+      color: '5a6a7a',
+      fontFace: this.theme.fontFamily.body,
+      align: 'center',
+    });
+    slide.addText(safeText(`${profile?.city || ''}${profile?.state ? ', ' + profile.state : ''}${profile?.country ? ', ' + profile.country : ''}`), {
+      x: 5.7,
+      y: 3.45,
+      w: 3.6,
+      h: 0.25,
+      fontSize: 9,
+      color: 'a8b8c8',
+      fontFace: this.theme.fontFamily.body,
+      align: 'center',
+    });
+
+    slide.addText('TIME HORIZON', {
+      x: 5.7,
+      y: 3.85,
+      w: 3.6,
+      h: 0.2,
+      fontSize: 7,
+      color: '5a6a7a',
+      fontFace: this.theme.fontFamily.body,
+      align: 'center',
+    });
+    slide.addText(safeText(`${this.formData.timeHorizon} Months`), {
+      x: 5.7,
+      y: 4.0,
+      w: 3.6,
+      h: 0.25,
+      fontSize: 9,
+      color: 'a8b8c8',
+      fontFace: this.theme.fontFamily.body,
+      align: 'center',
+    });
+
+    // Bottom bar
     slide.addShape('rect', {
       x: 0,
-      y: 4.9,
-      w: 6,
+      y: 4.95,
+      w: '100%',
       h: 0.55,
-      fill: { color: '0f1d2d' },
+      fill: { color: '050a10' },
     });
 
     slide.addText(
-      `Prepared by ${this.formData.authorName || 'Analyst'} | ${this.generatedDate} | Confidential`,
+      safeText(`${this.formData.authorName || 'Analyst'} | ${this.generatedDate} | Confidential`),
       {
-        x: 0.5,
-        y: 5,
-        w: 5.3,
+        x: 0.6,
+        y: 5.05,
+        w: 5,
         h: 0.35,
         fontSize: 8,
-        color: '6b7c8a',
+        color: '4a5a6a',
         fontFace: this.theme.fontFamily.body,
       }
     );
 
-    // Location info on right side
-    if (profile?.city || profile?.country) {
-      slide.addText(safeText(`HQ: ${profile?.city || ''}, ${profile?.state || profile?.country || ''}`), {
-        x: 6.3,
-        y: 4.6,
-        w: 3.2,
-        h: 0.3,
-        fontSize: 9,
-        color: '8aaaca',
-        fontFace: this.theme.fontFamily.body,
-        align: 'center',
-      });
-    }
+    slide.addText(safeText(profile?.website || ''), {
+      x: 5.5,
+      y: 5.05,
+      w: 4,
+      h: 0.35,
+      fontSize: 8,
+      color: '4a5a6a',
+      fontFace: this.theme.fontFamily.body,
+      align: 'right',
+    });
   }
 
   private getRatingColor(rating: Rating): string {
