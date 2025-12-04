@@ -889,15 +889,26 @@ export class PitchDeckBuilder {
       align: 'center',
     });
 
+    // Safely parse range (handle different formats)
+    let weekHigh = 'N/A';
+    let weekLow = 'N/A';
+    if (profile?.range && typeof profile.range === 'string' && profile.range.includes('-')) {
+      const rangeParts = profile.range.split('-');
+      if (rangeParts.length >= 2) {
+        weekLow = `$${rangeParts[0].trim()}`;
+        weekHigh = `$${rangeParts[1].trim()}`;
+      }
+    }
+
     const tradingData = [
-      ['Stock Price', profile?.price ? `$${profile.price.toFixed(2)}` : 'N/A'],
+      ['Stock Price', profile?.price ? `$${Number(profile.price).toFixed(2)}` : 'N/A'],
       ['Market Cap', profile?.mktCap ? formatLargeNumber(profile.mktCap) : 'N/A'],
-      ['52-Week High', profile?.range ? `$${profile.range.split('-')[1]}` : 'N/A'],
-      ['52-Week Low', profile?.range ? `$${profile.range.split('-')[0]}` : 'N/A'],
-      ['Avg Volume', profile?.volAvg ? `${(profile.volAvg / 1e6).toFixed(1)}M` : 'N/A'],
-      ['Beta', profile?.beta ? profile.beta.toFixed(2) : 'N/A'],
-      ['Div Yield', ratios?.dividendYieldTTM ? `${(ratios.dividendYieldTTM * 100).toFixed(2)}%` : 'N/A'],
-      ['P/E (TTM)', ratios?.peRatioTTM ? `${ratios.peRatioTTM.toFixed(1)}x` : 'N/A'],
+      ['52-Week High', weekHigh],
+      ['52-Week Low', weekLow],
+      ['Avg Volume', profile?.volAvg ? `${(Number(profile.volAvg) / 1e6).toFixed(1)}M` : 'N/A'],
+      ['Beta', profile?.beta ? Number(profile.beta).toFixed(2) : 'N/A'],
+      ['Div Yield', ratios?.dividendYieldTTM ? `${(Number(ratios.dividendYieldTTM) * 100).toFixed(2)}%` : 'N/A'],
+      ['P/E (TTM)', ratios?.peRatioTTM ? `${Number(ratios.peRatioTTM).toFixed(1)}x` : 'N/A'],
     ];
 
     tradingData.forEach((row, i) => {
