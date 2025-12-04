@@ -269,7 +269,7 @@ export class PitchDeckBuilder {
 
     // Ticker and Exchange
     const exchangeName = profile?.exchangeShortName || (profile as any)?.exchange || '';
-    slide.addText(`${profile?.symbol || ''} : ${exchangeName}`, {
+    slide.addText(safeText(`${profile?.symbol || ''} : ${exchangeName}`), {
       x: 0.5,
       y: 2.05,
       w: 5.3,
@@ -280,7 +280,7 @@ export class PitchDeckBuilder {
     });
 
     // Sector/Industry
-    slide.addText(`${profile?.sector || ''} | ${profile?.industry || ''}`, {
+    slide.addText(safeText(`${profile?.sector || ''} | ${profile?.industry || ''}`), {
       x: 0.5,
       y: 2.4,
       w: 5.3,
@@ -366,7 +366,7 @@ export class PitchDeckBuilder {
 
     // Location info on right side
     if (profile?.city || profile?.country) {
-      slide.addText(`HQ: ${profile?.city || ''}, ${profile?.state || profile?.country || ''}`, {
+      slide.addText(safeText(`HQ: ${profile?.city || ''}, ${profile?.state || profile?.country || ''}`), {
         x: 6.3,
         y: 4.6,
         w: 3.2,
@@ -459,7 +459,7 @@ export class PitchDeckBuilder {
       h: 0.5,
       fill: { color: this.theme.primaryColor },
     });
-    slide.addText(`${profile?.companyName || 'Company'} (${profile?.symbol || ''}) | Investment Summary`, {
+    slide.addText(safeText(`${profile?.companyName || 'Company'} (${profile?.symbol || ''}) | Investment Summary`), {
       x: 0.3,
       y: 0.1,
       w: 8,
@@ -657,16 +657,22 @@ export class PitchDeckBuilder {
       fill: { color: 'f5f6f8' },
     });
 
+    const companyName = profile?.companyName || 'Company';
+    const sector = profile?.sector || 'Technology';
+    const industry = profile?.industry || 'the industry';
+    const mktCapStr = profile?.mktCap ? formatLargeNumber(profile.mktCap) : 'significant';
+    const peStr = ratios?.peRatioTTM ? ratios.peRatioTTM.toFixed(1) + 'x' : 'current';
+
     const thesisBullets = [
-      `${profile?.companyName} is a ${profile?.sector || ''} company operating in ${profile?.industry || 'the industry'}`,
-      `Strong competitive position with ${profile?.mktCap ? formatLargeNumber(profile.mktCap) : 'significant'} market cap and established market presence`,
-      `Key catalysts include [user to add: product launches, market expansion, margin improvement initiatives]`,
-      `Attractive valuation at ${ratios?.peRatioTTM ? ratios.peRatioTTM.toFixed(1) + 'x' : 'current'} P/E vs. historical average and peers`,
+      safeText(`${companyName} is a ${sector} company operating in ${industry}`),
+      safeText(`Strong competitive position with ${mktCapStr} market cap and established market presence`),
+      safeText('Key catalysts include [user to add: product launches, market expansion, margin improvement initiatives]'),
+      safeText(`Attractive valuation at ${peStr} P/E vs. historical average and peers`),
     ];
 
     // Add each bullet point separately to avoid pptxgenjs text parsing issues
     thesisBullets.forEach((bullet, i) => {
-      slide.addText(`• ${bullet}`, {
+      slide.addText(safeText('• ' + bullet), {
         x: 0.4,
         y: 2.9 + (i * 0.25),
         w: 9,
@@ -745,7 +751,7 @@ export class PitchDeckBuilder {
 
     // Add each risk bullet separately
     risks.forEach((risk, i) => {
-      slide.addText(`• ${risk}`, {
+      slide.addText(safeText('• ' + risk), {
         x: 5,
         y: 4.05 + (i * 0.2),
         w: 4.5,
@@ -775,7 +781,7 @@ export class PitchDeckBuilder {
       h: 0.45,
       fill: { color: this.theme.primaryColor },
     });
-    slide.addText(`Company Overview | ${profile?.companyName || 'Company'}`, {
+    slide.addText(safeText(`Company Overview | ${profile?.companyName || 'Company'}`), {
       x: 0.3,
       y: 0.08,
       w: 9,
@@ -1049,7 +1055,7 @@ export class PitchDeckBuilder {
       fontFace: this.theme.fontFamily.heading,
     });
 
-    slide.addText(`Sector: ${profile?.sector || 'N/A'}`, {
+    slide.addText(safeText(`Sector: ${profile?.sector || 'N/A'}`), {
       x: 0.5,
       y: 1.2,
       w: 9,
@@ -1060,7 +1066,7 @@ export class PitchDeckBuilder {
       fontFace: this.theme.fontFamily.body,
     });
 
-    slide.addText(`Industry: ${profile?.industry || 'N/A'}`, {
+    slide.addText(safeText(`Industry: ${profile?.industry || 'N/A'}`), {
       x: 0.5,
       y: 1.6,
       w: 9,
@@ -1081,7 +1087,7 @@ export class PitchDeckBuilder {
 
     // Add each bullet separately
     industryBullets.forEach((bullet, i) => {
-      slide.addText(`• ${bullet}`, {
+      slide.addText(safeText(`• ${bullet}`), {
         x: 0.5,
         y: 2.2 + (i * 0.45),
         w: 9,
@@ -1658,7 +1664,7 @@ export class PitchDeckBuilder {
         fill: { color: 'f0f2f5' },
         line: { color: 'e0e4e8', width: 1 },
       });
-      slide.addText(`[ Product/Service ${i + 1} Image ]`, {
+      slide.addText(safeText(`[ Product/Service ${i + 1} Image ]`), {
         x,
         y: 3.1,
         w: 2.9,
@@ -2042,7 +2048,7 @@ export class PitchDeckBuilder {
       });
 
       method.items.forEach((item, j) => {
-        slide.addText(`• ${item}`, {
+        slide.addText(safeText(`• ${item}`), {
           x: x + 0.1,
           y: 2.4 + (j * 0.4),
           w: 2.7,
@@ -2255,7 +2261,7 @@ export class PitchDeckBuilder {
       });
 
       // Mitigant text
-      slide.addText(`✓ ${item.mitigant}`, {
+      slide.addText(safeText(`✓ ${item.mitigant}`), {
         x: 5,
         y: y + 0.15,
         w: 4.4,
