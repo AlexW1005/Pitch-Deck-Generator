@@ -2295,57 +2295,202 @@ export class PitchDeckBuilder {
   // ============================================
   private addAppendix(): void {
     const slide = this.pptx.addSlide();
+    const profile = this.companyData.profile;
 
-    slide.addText('Appendix', {
+    // Header background
+    slide.addShape('rect', {
+      x: 0,
+      y: 0,
+      w: '100%',
+      h: 1.1,
+      fill: { color: this.theme.primaryColor },
+    });
+
+    // Accent line
+    slide.addShape('rect', {
+      x: 0,
+      y: 0,
+      w: '100%',
+      h: 0.04,
+      fill: { color: this.theme.accentColor },
+    });
+
+    slide.addText('Appendix & Disclosures', {
       x: 0.5,
-      y: 0.5,
+      y: 0.35,
       w: 9,
-      h: 0.6,
-      fontSize: 28,
+      h: 0.5,
+      fontSize: 24,
       bold: true,
-      color: this.theme.textColor,
+      color: 'ffffff',
       fontFace: this.theme.fontFamily.heading,
     });
 
-    slide.addText('Data Sources & Disclaimers', {
-      x: 0.5,
-      y: 1.2,
-      w: 9,
-      h: 0.4,
-      fontSize: 14,
+    // Three column layout
+    // Column 1: Data Sources
+    slide.addShape('rect', {
+      x: 0.4,
+      y: 1.3,
+      w: 3.0,
+      h: 0.35,
+      fill: { color: this.theme.accentColor },
+    });
+    slide.addText('DATA SOURCES', {
+      x: 0.4,
+      y: 1.32,
+      w: 3.0,
+      h: 0.32,
+      fontSize: 10,
       bold: true,
-      color: this.theme.accentColor,
-      fontFace: this.theme.fontFamily.heading,
+      color: 'ffffff',
+      fontFace: this.theme.fontFamily.body,
+      align: 'center',
     });
 
-    const sources = [
-      '• Financial data: Financial Modeling Prep (FMP) API',
-      '• Stock prices: FMP historical price data',
-      '• Company information: FMP company profiles',
-      `• Generated: ${this.generatedDate}`,
-      '',
-      'Disclaimer:',
-      'This presentation was generated using publicly available data for informational purposes only.',
-      'Users must verify all data and assumptions before making investment decisions.',
-      'This is NOT investment advice. Past performance does not guarantee future results.',
-      '',
-      'Additional resources to consider:',
-      '• Company SEC filings (10-K, 10-Q)',
-      '• Earnings call transcripts',
-      '• Industry reports',
-      '• Sell-side research',
+    const dataSources = [
+      { icon: '📊', text: 'Financial Modeling Prep API' },
+      { icon: '📈', text: 'Historical Price Data' },
+      { icon: '🏢', text: 'Company Profiles & Filings' },
+      { icon: '📅', text: `Generated: ${this.generatedDate}` },
     ];
 
-    slide.addText(sources.join('\n'), {
-      x: 0.5,
-      y: 1.7,
-      w: 9,
-      h: 3.5,
-      fontSize: 10,
-      color: this.theme.secondaryColor,
-      fontFace: this.theme.fontFamily.body,
-      lineSpacingMultiple: 1.3,
+    dataSources.forEach((source, idx) => {
+      slide.addText(safeText(`${source.icon}  ${source.text}`), {
+        x: 0.5,
+        y: 1.8 + (idx * 0.4),
+        w: 2.9,
+        h: 0.35,
+        fontSize: 9,
+        color: this.theme.textColor,
+        fontFace: this.theme.fontFamily.body,
+      });
     });
+
+    // Column 2: Additional Resources
+    slide.addShape('rect', {
+      x: 3.5,
+      y: 1.3,
+      w: 3.0,
+      h: 0.35,
+      fill: { color: '2563eb' },
+    });
+    slide.addText('RESEARCH RESOURCES', {
+      x: 3.5,
+      y: 1.32,
+      w: 3.0,
+      h: 0.32,
+      fontSize: 10,
+      bold: true,
+      color: 'ffffff',
+      fontFace: this.theme.fontFamily.body,
+      align: 'center',
+    });
+
+    const resources = [
+      { icon: '📑', text: 'SEC Filings (10-K, 10-Q, 8-K)' },
+      { icon: '🎙️', text: 'Earnings Call Transcripts' },
+      { icon: '📰', text: 'Industry & Sector Reports' },
+      { icon: '🔬', text: 'Sell-Side Research' },
+    ];
+
+    resources.forEach((resource, idx) => {
+      slide.addText(safeText(`${resource.icon}  ${resource.text}`), {
+        x: 3.6,
+        y: 1.8 + (idx * 0.4),
+        w: 2.9,
+        h: 0.35,
+        fontSize: 9,
+        color: this.theme.textColor,
+        fontFace: this.theme.fontFamily.body,
+      });
+    });
+
+    // Column 3: Company Info
+    slide.addShape('rect', {
+      x: 6.6,
+      y: 1.3,
+      w: 3.0,
+      h: 0.35,
+      fill: { color: '059669' },
+    });
+    slide.addText('COMPANY INFO', {
+      x: 6.6,
+      y: 1.32,
+      w: 3.0,
+      h: 0.32,
+      fontSize: 10,
+      bold: true,
+      color: 'ffffff',
+      fontFace: this.theme.fontFamily.body,
+      align: 'center',
+    });
+
+    const companyInfo = [
+      { label: 'Website', value: profile?.website || 'N/A' },
+      { label: 'Exchange', value: profile?.exchangeShortName || 'N/A' },
+      { label: 'Currency', value: profile?.currency || 'USD' },
+      { label: 'Country', value: profile?.country || 'N/A' },
+    ];
+
+    companyInfo.forEach((info, idx) => {
+      slide.addText(safeText(info.label), {
+        x: 6.7,
+        y: 1.8 + (idx * 0.4),
+        w: 1.0,
+        h: 0.35,
+        fontSize: 8,
+        bold: true,
+        color: '6b7280',
+        fontFace: this.theme.fontFamily.body,
+      });
+      slide.addText(safeText(info.value), {
+        x: 7.6,
+        y: 1.8 + (idx * 0.4),
+        w: 1.9,
+        h: 0.35,
+        fontSize: 8,
+        color: this.theme.textColor,
+        fontFace: this.theme.fontFamily.body,
+      });
+    });
+
+    // Disclaimer box
+    slide.addShape('rect', {
+      x: 0.4,
+      y: 3.6,
+      w: 9.2,
+      h: 1.5,
+      fill: { color: 'fef3c7' },
+      line: { color: 'f59e0b', width: 1 },
+    });
+
+    slide.addText('⚠️  IMPORTANT DISCLAIMER', {
+      x: 0.5,
+      y: 3.7,
+      w: 9,
+      h: 0.3,
+      fontSize: 10,
+      bold: true,
+      color: 'b45309',
+      fontFace: this.theme.fontFamily.body,
+    });
+
+    slide.addText(
+      safeText('This presentation was generated using publicly available data for informational purposes only. ' +
+      'All data, analysis, and conclusions should be independently verified before making any investment decisions. ' +
+      'This document does NOT constitute investment advice, a recommendation, or an offer to buy or sell securities. ' +
+      'Past performance is not indicative of future results. Investing involves risk, including potential loss of principal.'),
+      {
+        x: 0.5,
+        y: 4.0,
+        w: 9,
+        h: 1.0,
+        fontSize: 8,
+        color: '78350f',
+        fontFace: this.theme.fontFamily.body,
+        lineSpacingMultiple: 1.3,
+      }
+    );
 
     this.addFooter(slide);
   }
