@@ -1247,14 +1247,14 @@ export class PitchDeckBuilder {
       .slice(0, 4);
     sortedIncome.forEach((stmt) => {
       headers.push({
-        text: `FY${stmt.calendarYear || 'N/A'}`,
+        text: safeText(`FY${stmt.calendarYear || 'N/A'}`),
         options: { bold: true, fill: { color: this.theme.primaryColor }, color: 'ffffff', align: 'right' },
       });
     });
 
     if (ratios) {
       headers.push({
-        text: 'TTM',
+        text: safeText('TTM'),
         options: { bold: true, fill: { color: this.theme.accentColor }, color: 'ffffff', align: 'right' },
       });
     }
@@ -1273,11 +1273,11 @@ export class PitchDeckBuilder {
     ];
 
     metrics.forEach((metric) => {
-      const row: PptxGenJS.TableCell[] = [{ text: metric.name, options: { bold: true } }];
+      const row: PptxGenJS.TableCell[] = [{ text: safeText(metric.name), options: { bold: true } }];
       sortedIncome.forEach((stmt) => {
-        row.push({ text: metric.getValue(stmt), options: { align: 'right' } });
+        row.push({ text: safeText(metric.getValue(stmt)), options: { align: 'right' } });
       });
-      if (ratios) row.push({ text: metric.ttm, options: { align: 'right' } });
+      if (ratios) row.push({ text: safeText(metric.ttm), options: { align: 'right' } });
       rows.push(row);
     });
 
@@ -1339,7 +1339,7 @@ export class PitchDeckBuilder {
     ];
     sortedIncome.forEach((stmt) => {
       headers.push({
-        text: `FY${stmt.calendarYear || 'N/A'}`,
+        text: safeText(`FY${stmt.calendarYear || 'N/A'}`),
         options: { bold: true, fill: { color: this.theme.primaryColor }, color: 'ffffff', align: 'right' },
       });
     });
@@ -1457,10 +1457,10 @@ export class PitchDeckBuilder {
     // Add the subject company first (highlighted)
     if (profile) {
       rows.push([
-        { text: `${profile.companyName} *`, options: { bold: true, fill: { color: 'e8ecef' } } },
-        { text: formatLargeNumber(profile.mktCap), options: { align: 'right', fill: { color: 'e8ecef' } } },
-        { text: ratios?.peRatioTTM ? formatRatio(ratios.peRatioTTM, 1) : 'N/A', options: { align: 'right', fill: { color: 'e8ecef' } } },
-        { text: ratios?.enterpriseValueMultipleTTM ? formatRatio(ratios.enterpriseValueMultipleTTM, 1) : 'N/A', options: { align: 'right', fill: { color: 'e8ecef' } } },
+        { text: safeText(`${profile.companyName || ''} *`), options: { bold: true, fill: { color: 'e8ecef' } } },
+        { text: safeText(formatLargeNumber(profile.mktCap)), options: { align: 'right', fill: { color: 'e8ecef' } } },
+        { text: safeText(ratios?.peRatioTTM ? formatRatio(ratios.peRatioTTM, 1) : 'N/A'), options: { align: 'right', fill: { color: 'e8ecef' } } },
+        { text: safeText(ratios?.enterpriseValueMultipleTTM ? formatRatio(ratios.enterpriseValueMultipleTTM, 1) : 'N/A'), options: { align: 'right', fill: { color: 'e8ecef' } } },
       ]);
     }
 
