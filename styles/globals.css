@@ -1,0 +1,275 @@
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Lazard-inspired professional color palette */
+  --lazard-navy: #1a2744;
+  --lazard-slate: #3d4f5f;
+  --lazard-gray: #6b7c8a;
+  --lazard-silver: #9ca8b3;
+  --lazard-light: #e8ecef;
+  --lazard-cream: #f5f6f8;
+  --lazard-accent: #2563eb;
+  --lazard-gold: #b8860b;
+  
+  /* Theme accent (can be overridden by user) */
+  --theme-accent: var(--lazard-accent);
+  --theme-accent-light: #dbeafe;
+}
+
+@layer base {
+  html {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  body {
+    @apply bg-lazard-cream text-lazard-navy;
+    min-height: 100vh;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Crimson Pro', Georgia, serif;
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  /* Professional form inputs */
+  .input-lazard {
+    @apply w-full px-4 py-3 bg-white border border-lazard-light rounded-lg
+           text-lazard-navy placeholder:text-lazard-silver
+           focus:outline-none focus:ring-2 focus:ring-lazard-accent/30 focus:border-lazard-accent
+           transition-all duration-200;
+  }
+  
+  .select-lazard {
+    @apply w-full px-4 py-3 bg-white border border-lazard-light rounded-lg
+           text-lazard-navy appearance-none cursor-pointer
+           focus:outline-none focus:ring-2 focus:ring-lazard-accent/30 focus:border-lazard-accent
+           transition-all duration-200;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7c8a' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+  }
+  
+  /* Primary button */
+  .btn-primary {
+    @apply px-6 py-3 bg-lazard-navy text-white font-medium rounded-lg
+           hover:bg-lazard-slate active:bg-lazard-navy
+           focus:outline-none focus:ring-2 focus:ring-lazard-navy/50
+           transition-all duration-200 transform hover:scale-[1.02]
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100;
+  }
+  
+  /* Secondary button */
+  .btn-secondary {
+    @apply px-6 py-3 bg-white text-lazard-navy font-medium rounded-lg
+           border border-lazard-light
+           hover:bg-lazard-light/50 active:bg-lazard-light
+           focus:outline-none focus:ring-2 focus:ring-lazard-accent/30
+           transition-all duration-200;
+  }
+  
+  /* Accent button */
+  .btn-accent {
+    @apply px-6 py-3 text-white font-medium rounded-lg
+           focus:outline-none focus:ring-2 focus:ring-offset-2
+           transition-all duration-200 transform hover:scale-[1.02]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+    background-color: var(--theme-accent);
+  }
+  
+  /* Card component */
+  .card-lazard {
+    @apply bg-white rounded-xl shadow-sm border border-lazard-light/50
+           p-6 transition-shadow duration-200 hover:shadow-md;
+  }
+  
+  /* Section header */
+  .section-header {
+    @apply text-sm font-semibold uppercase tracking-wider text-lazard-gray mb-3;
+  }
+  
+  /* Slide thumbnail */
+  .slide-thumbnail {
+    @apply aspect-[16/9] bg-white rounded-lg border-2 border-transparent
+           cursor-pointer transition-all duration-200
+           hover:border-lazard-accent/50 hover:shadow-md;
+  }
+  
+  .slide-thumbnail.active {
+    @apply border-lazard-accent shadow-lg;
+  }
+  
+  /* Progress step */
+  .progress-step {
+    @apply flex items-center gap-3 text-sm;
+  }
+  
+  .progress-step.completed {
+    @apply text-green-600;
+  }
+  
+  .progress-step.active {
+    @apply text-lazard-accent font-medium;
+  }
+  
+  .progress-step.pending {
+    @apply text-lazard-silver;
+  }
+  
+  /* Custom checkbox */
+  .checkbox-lazard {
+    @apply h-5 w-5 rounded border-lazard-light text-lazard-accent
+           focus:ring-lazard-accent/30 focus:ring-offset-0
+           transition-colors duration-200 cursor-pointer;
+  }
+  
+  /* Color picker wrapper */
+  .color-picker-wrapper {
+    @apply relative inline-flex items-center gap-3;
+  }
+  
+  .color-picker-wrapper input[type="color"] {
+    @apply h-10 w-14 rounded-lg border border-lazard-light cursor-pointer
+           overflow-hidden appearance-none bg-transparent;
+  }
+  
+  .color-picker-wrapper input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+  
+  .color-picker-wrapper input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 0.5rem;
+  }
+  
+  /* Tooltip */
+  .tooltip {
+    @apply absolute z-50 px-3 py-2 text-sm text-white bg-lazard-navy rounded-lg
+           shadow-lg opacity-0 invisible transition-all duration-200;
+  }
+  
+  .tooltip-trigger:hover .tooltip {
+    @apply opacity-100 visible;
+  }
+  
+  /* Loading skeleton */
+  .skeleton {
+    @apply animate-pulse bg-lazard-light rounded;
+  }
+  
+  /* Error alert */
+  .alert-error {
+    @apply bg-red-50 border border-red-200 text-red-800 rounded-lg p-4
+           flex items-start gap-3;
+  }
+  
+  /* Success alert */
+  .alert-success {
+    @apply bg-green-50 border border-green-200 text-green-800 rounded-lg p-4
+           flex items-start gap-3;
+  }
+  
+  /* Info alert */
+  .alert-info {
+    @apply bg-blue-50 border border-blue-200 text-blue-800 rounded-lg p-4
+           flex items-start gap-3;
+  }
+}
+
+@layer utilities {
+  /* Text utilities for financial data */
+  .text-financial-positive {
+    @apply text-green-600;
+  }
+  
+  .text-financial-negative {
+    @apply text-red-600;
+  }
+  
+  .text-financial-neutral {
+    @apply text-lazard-gray;
+  }
+  
+  /* Slide preview scaling */
+  .slide-scale-preview {
+    transform-origin: top left;
+  }
+  
+  /* Custom scrollbar */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-lazard-light/50 rounded-full;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-lazard-silver rounded-full;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    @apply bg-lazard-gray;
+  }
+  
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Gradient text */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-lazard-navy to-lazard-slate;
+  }
+}
+
+/* Print styles for debug */
+@media print {
+  body {
+    @apply bg-white;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Animation for loading states */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--lazard-light) 25%,
+    var(--lazard-cream) 50%,
+    var(--lazard-light) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+
+
+
+
