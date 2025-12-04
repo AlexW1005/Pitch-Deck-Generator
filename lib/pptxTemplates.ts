@@ -2348,42 +2348,67 @@ export class PitchDeckBuilder {
   // Build Complete Deck
   // ============================================
   public async build(): Promise<Blob> {
-    // Add all slides in order
-    this.addCoverSlide();
-    this.addTableOfContents();
-    this.addInvestmentSummary();
-    this.addCompanyOverview();
-    this.addIndustryOverview();
-    this.addKeyMetrics();
-    this.addFinancialSummary();
+    // Add all slides in order with error tracking
+    const slides = [
+      { name: 'Cover', fn: () => this.addCoverSlide() },
+      { name: 'TOC', fn: () => this.addTableOfContents() },
+      { name: 'InvestmentSummary', fn: () => this.addInvestmentSummary() },
+      { name: 'CompanyOverview', fn: () => this.addCompanyOverview() },
+      { name: 'IndustryOverview', fn: () => this.addIndustryOverview() },
+      { name: 'KeyMetrics', fn: () => this.addKeyMetrics() },
+      { name: 'FinancialSummary', fn: () => this.addFinancialSummary() },
+      { name: 'PeersComps', fn: () => this.addPeersComps() },
+      { name: 'GrowthDrivers', fn: () => this.addGrowthDrivers() },
+      { name: 'InvestmentThesis', fn: () => this.addInvestmentThesis() },
+      { name: 'Valuation', fn: () => this.addValuation() },
+      { name: 'RisksAndMitigants', fn: () => this.addRisksAndMitigants() },
+      { name: 'Appendix', fn: () => this.addAppendix() },
+    ];
+
+    for (const slide of slides) {
+      try {
+        console.log(`[PPTX] Adding slide: ${slide.name}`);
+        slide.fn();
+      } catch (error) {
+        console.error(`[PPTX] ERROR in slide ${slide.name}:`, error);
+        throw new Error(`Failed on slide "${slide.name}": ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }
 
     // Add chart slides
-    const revenueChart = this.charts.find((c) => c.type === 'revenueGrowth');
-    if (revenueChart) {
-      this.addChartSlide(revenueChart);
+    try {
+      const revenueChart = this.charts.find((c) => c.type === 'revenueGrowth');
+      if (revenueChart) {
+        console.log('[PPTX] Adding chart: revenueGrowth');
+        this.addChartSlide(revenueChart);
+      }
+
+      const priceChart = this.charts.find((c) => c.type === 'pricePerformance');
+      if (priceChart) {
+        console.log('[PPTX] Adding chart: pricePerformance');
+        this.addChartSlide(priceChart);
+      }
+
+      const marketShareChart = this.charts.find((c) => c.type === 'marketShare');
+      if (marketShareChart) {
+        console.log('[PPTX] Adding chart: marketShare');
+        this.addChartSlide(marketShareChart);
+      }
+    } catch (error) {
+      console.error('[PPTX] ERROR adding chart slide:', error);
+      throw new Error(`Failed on chart slide: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-
-    const priceChart = this.charts.find((c) => c.type === 'pricePerformance');
-    if (priceChart) {
-      this.addChartSlide(priceChart);
-    }
-
-    this.addPeersComps();
-
-    const marketShareChart = this.charts.find((c) => c.type === 'marketShare');
-    if (marketShareChart) {
-      this.addChartSlide(marketShareChart);
-    }
-
-    this.addGrowthDrivers();
-    this.addInvestmentThesis();
-    this.addValuation();
-    this.addRisksAndMitigants();
-    this.addAppendix();
 
     // Generate blob
-    const blob = await this.pptx.write({ outputType: 'blob' }) as Blob;
-    return blob;
+    try {
+      console.log('[PPTX] Generating blob...');
+      const blob = await this.pptx.write({ outputType: 'blob' }) as Blob;
+      console.log('[PPTX] Blob generated successfully');
+      return blob;
+    } catch (error) {
+      console.error('[PPTX] ERROR generating blob:', error);
+      throw new Error(`Failed generating PowerPoint file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 }
 
