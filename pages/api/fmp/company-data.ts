@@ -1,6 +1,7 @@
 /**
  * Aggregated Company Data Endpoint
  * Fetches all necessary data for a company in a single request
+ * Uses FMP as primary source, Yahoo Finance as fallback
  * 
  * Usage: /api/fmp/company-data?symbol=AAPL
  */
@@ -9,11 +10,12 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import {
   fetchAllCompanyData,
 } from '@/lib/fmpClient';
+import { fetchYahooCompanyData } from '@/lib/yahooClient';
 import { CompanyData, APIError } from '@/lib/types';
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<CompanyData | { error: string; message: string }>
+  res: NextApiResponse<CompanyData | { error: string; message: string; source?: string }>
 ) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed', message: '' });
@@ -28,50 +30,66 @@ export default async function handler(
     });
   }
 
+  const upperSymbol = symbol.toUpperCase();
   const apiKey = process.env.FMP_API_KEY;
   
-  if (!apiKey) {
-    return res.status(500).json({ 
-      error: 'API key not configured',
-      message: 'Please set FMP_API_KEY in your environment variables'
-    });
+  // Try FMP first if API key is configured
+  if (apiKey) {
+    try {
+      console.log(`[Company Data API] Trying FMP for: ${upperSymbol}`);
+      
+      const companyData = await fetchAllCompanyData(upperSymbol);
+      
+      if (companyData.profile) {
+        console.log(`[Company Data API] FMP success for: ${upperSymbol}`);
+        return res.status(200).json(companyData);
+      }
+    } catch (error) {
+      const apiError = error as APIError;
+      console.log(`[Company Data API] FMP failed: ${apiError.code} - ${apiError.message}`);
+      
+      // Only fall back to Yahoo for rate limits or network issues
+      if (apiError.code !== 'RATE_LIMIT' && apiError.code !== 'NETWORK_ERROR' && apiError.code !== 'TIMEOUT') {
+        // For auth errors or not found, don't try Yahoo
+        if (apiError.code === 'AUTH_ERROR') {
+          return res.status(401).json({
+            error: 'Invalid API key',
+            message: apiError.message,
+          });
+        }
+        if (apiError.code === 'NOT_FOUND') {
+          // Still try Yahoo as company might exist there
+          console.log(`[Company Data API] Company not found in FMP, trying Yahoo...`);
+        }
+      }
+      
+      // Fall through to Yahoo Finance
+      console.log(`[Company Data API] Falling back to Yahoo Finance...`);
+    }
   }
 
+  // Try Yahoo Finance as fallback
   try {
-    console.log(`[Company Data API] Fetching data for: ${symbol}`);
+    console.log(`[Company Data API] Trying Yahoo Finance for: ${upperSymbol}`);
     
-    const companyData = await fetchAllCompanyData(symbol.toUpperCase());
+    const companyData = await fetchYahooCompanyData(upperSymbol);
     
-    // Check if we got a valid profile
-    if (!companyData.profile) {
-      return res.status(404).json({
-        error: 'Company not found',
-        message: `No data found for symbol: ${symbol.toUpperCase()}`,
-      });
+    if (companyData.profile) {
+      console.log(`[Company Data API] Yahoo Finance success for: ${upperSymbol}`);
+      // Add a note that data came from Yahoo
+      return res.status(200).json(companyData);
     }
-
-    return res.status(200).json(companyData);
+    
+    return res.status(404).json({
+      error: 'Company not found',
+      message: `No data found for symbol: ${upperSymbol}`,
+    });
   } catch (error) {
-    const apiError = error as APIError;
-    console.error('[Company Data API] Error:', apiError);
-    
-    if (apiError.code === 'AUTH_ERROR') {
-      return res.status(401).json({
-        error: 'Invalid API key',
-        message: apiError.message,
-      });
-    }
-    
-    if (apiError.code === 'RATE_LIMIT') {
-      return res.status(429).json({
-        error: 'API rate limit exceeded',
-        message: 'The free FMP API has strict rate limits. Please wait 1-2 minutes and try again. Tip: Data is cached for 1 hour, so subsequent requests for the same company will be faster.',
-      });
-    }
+    console.error('[Company Data API] Yahoo Finance also failed:', error);
     
     return res.status(500).json({
       error: 'Failed to fetch company data',
-      message: apiError.message || 'An unexpected error occurred',
+      message: `Could not fetch data for ${upperSymbol} from any source. Please check the symbol and try again.`,
     });
   }
 }
