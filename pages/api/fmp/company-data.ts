@@ -64,8 +64,8 @@ export default async function handler(
     
     if (apiError.code === 'RATE_LIMIT') {
       return res.status(429).json({
-        error: 'Rate limit exceeded',
-        message: apiError.message,
+        error: 'API rate limit exceeded',
+        message: 'The free FMP API has strict rate limits. Please wait 1-2 minutes and try again. Tip: Data is cached for 1 hour, so subsequent requests for the same company will be faster.',
       });
     }
     

@@ -28,7 +28,8 @@ interface CacheEntry<T> {
 }
 
 const cache = new Map<string, CacheEntry<unknown>>();
-const CACHE_DURATION_MS = (parseInt(process.env.CACHE_DURATION_MINUTES || '15', 10)) * 60 * 1000;
+// Longer cache to reduce API calls (free tier has strict limits)
+const CACHE_DURATION_MS = (parseInt(process.env.CACHE_DURATION_MINUTES || '60', 10)) * 60 * 1000;
 
 /**
  * Get cached data or fetch fresh

@@ -220,7 +220,11 @@ export default function Home() {
             <ErrorBox
               title="Failed to Generate Pitch"
               message={error || 'An unexpected error occurred'}
-              suggestion="Please check the ticker symbol and try again. Make sure your API key is configured."
+              suggestion={
+                error?.includes('rate limit') 
+                  ? "The free API has usage limits. Please wait 1-2 minutes before trying again."
+                  : "Please check the ticker symbol and try again. Make sure your API key is configured."
+              }
               onRetry={handleReset}
             />
           </div>
