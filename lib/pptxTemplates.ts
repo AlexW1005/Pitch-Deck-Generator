@@ -20,6 +20,27 @@ import {
 import { ChartExportResult } from './chartHelpers';
 
 // ============================================
+// Helper Functions
+// ============================================
+
+/**
+ * Ensure text is always a string (prevents pptxgenjs errors)
+ */
+function safeText(value: any): string {
+  if (value === null || value === undefined) {
+    return 'N/A';
+  }
+  if (typeof value === 'number') {
+    if (isNaN(value)) return 'N/A';
+    return String(value);
+  }
+  if (typeof value === 'string') {
+    return value || 'N/A';
+  }
+  return String(value) || 'N/A';
+}
+
+// ============================================
 // Theme Configuration
 // ============================================
 
@@ -1242,13 +1263,13 @@ export class PitchDeckBuilder {
 
     // Add all financial rows
     const metrics = [
-      { name: 'Revenue', getValue: (s: any) => formatLargeNumber(s.revenue || 0), ttm: '-' },
-      { name: 'Gross Profit', getValue: (s: any) => formatLargeNumber(s.grossProfit || 0), ttm: '-' },
-      { name: 'EBITDA', getValue: (s: any) => formatLargeNumber(s.ebitda || 0), ttm: '-' },
-      { name: 'Net Income', getValue: (s: any) => formatLargeNumber(s.netIncome || 0), ttm: '-' },
-      { name: 'Gross Margin', getValue: (s: any) => formatPercentage((s.grossProfitRatio || 0) * 100), ttm: ratios ? formatPercentage((ratios.grossProfitMarginTTM || 0) * 100) : '-' },
-      { name: 'Net Margin', getValue: (s: any) => formatPercentage((s.netIncomeRatio || 0) * 100), ttm: ratios ? formatPercentage((ratios.netProfitMarginTTM || 0) * 100) : '-' },
-      { name: 'EPS (Diluted)', getValue: (s: any) => `$${(s.epsdiluted ?? 0).toFixed(2)}`, ttm: '-' },
+      { name: 'Revenue', getValue: (s: any) => safeText(formatLargeNumber(s.revenue || 0)), ttm: '-' },
+      { name: 'Gross Profit', getValue: (s: any) => safeText(formatLargeNumber(s.grossProfit || 0)), ttm: '-' },
+      { name: 'EBITDA', getValue: (s: any) => safeText(formatLargeNumber(s.ebitda || 0)), ttm: '-' },
+      { name: 'Net Income', getValue: (s: any) => safeText(formatLargeNumber(s.netIncome || 0)), ttm: '-' },
+      { name: 'Gross Margin', getValue: (s: any) => safeText(formatPercentage((s.grossProfitRatio || 0) * 100)), ttm: ratios ? safeText(formatPercentage((ratios.grossProfitMarginTTM || 0) * 100)) : '-' },
+      { name: 'Net Margin', getValue: (s: any) => safeText(formatPercentage((s.netIncomeRatio || 0) * 100)), ttm: ratios ? safeText(formatPercentage((ratios.netProfitMarginTTM || 0) * 100)) : '-' },
+      { name: 'EPS (Diluted)', getValue: (s: any) => safeText(`$${(s.epsdiluted ?? 0).toFixed(2)}`), ttm: '-' },
     ];
 
     metrics.forEach((metric) => {
@@ -1328,35 +1349,35 @@ export class PitchDeckBuilder {
     // Revenue
     const revenueRow: PptxGenJS.TableCell[] = [{ text: 'Revenue', options: { bold: true } }];
     sortedIncome.forEach((stmt) => {
-      revenueRow.push({ text: ((stmt.revenue || 0) / 1e6).toFixed(0), options: { align: 'right' } });
+      revenueRow.push({ text: safeText(((stmt.revenue || 0) / 1e6).toFixed(0)), options: { align: 'right' } });
     });
     rows.push(revenueRow);
 
     // Gross Profit
     const gpRow: PptxGenJS.TableCell[] = [{ text: 'Gross Profit', options: { bold: true } }];
     sortedIncome.forEach((stmt) => {
-      gpRow.push({ text: ((stmt.grossProfit || 0) / 1e6).toFixed(0), options: { align: 'right' } });
+      gpRow.push({ text: safeText(((stmt.grossProfit || 0) / 1e6).toFixed(0)), options: { align: 'right' } });
     });
     rows.push(gpRow);
 
     // EBITDA
     const ebitdaRow: PptxGenJS.TableCell[] = [{ text: 'EBITDA', options: { bold: true } }];
     sortedIncome.forEach((stmt) => {
-      ebitdaRow.push({ text: ((stmt.ebitda || 0) / 1e6).toFixed(0), options: { align: 'right' } });
+      ebitdaRow.push({ text: safeText(((stmt.ebitda || 0) / 1e6).toFixed(0)), options: { align: 'right' } });
     });
     rows.push(ebitdaRow);
 
     // Operating Income
     const opIncRow: PptxGenJS.TableCell[] = [{ text: 'Operating Income', options: { bold: true } }];
     sortedIncome.forEach((stmt) => {
-      opIncRow.push({ text: ((stmt.operatingIncome || 0) / 1e6).toFixed(0), options: { align: 'right' } });
+      opIncRow.push({ text: safeText(((stmt.operatingIncome || 0) / 1e6).toFixed(0)), options: { align: 'right' } });
     });
     rows.push(opIncRow);
 
     // Net Income
     const netIncRow: PptxGenJS.TableCell[] = [{ text: 'Net Income', options: { bold: true } }];
     sortedIncome.forEach((stmt) => {
-      netIncRow.push({ text: ((stmt.netIncome || 0) / 1e6).toFixed(0), options: { align: 'right' } });
+      netIncRow.push({ text: safeText(((stmt.netIncome || 0) / 1e6).toFixed(0)), options: { align: 'right' } });
     });
     rows.push(netIncRow);
 
@@ -1446,10 +1467,10 @@ export class PitchDeckBuilder {
     // Add peers
     peers.slice(0, 5).forEach((peer) => {
       rows.push([
-        { text: peer.companyName },
-        { text: formatLargeNumber(peer.marketCap), options: { align: 'right' } },
-        { text: peer.peRatio ? formatRatio(peer.peRatio, 1) : 'N/A', options: { align: 'right' } },
-        { text: peer.evToEbitda ? formatRatio(peer.evToEbitda, 1) : 'N/A', options: { align: 'right' } },
+        { text: safeText(peer.companyName) },
+        { text: safeText(formatLargeNumber(peer.marketCap)), options: { align: 'right' } },
+        { text: safeText(peer.peRatio ? formatRatio(peer.peRatio, 1) : 'N/A'), options: { align: 'right' } },
+        { text: safeText(peer.evToEbitda ? formatRatio(peer.evToEbitda, 1) : 'N/A'), options: { align: 'right' } },
       ]);
     });
 
