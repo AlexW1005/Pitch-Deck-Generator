@@ -41,7 +41,7 @@ function convertToFMPProfile(quote: any, summary: any): FMPCompanyProfile {
     city: summary?.assetProfile?.city || '',
     state: summary?.assetProfile?.state || '',
     fullTimeEmployees: summary?.assetProfile?.fullTimeEmployees?.toString() || '',
-    image: `https://logo.clearbit.com/${quote.symbol?.toLowerCase()}.com`,
+    image: '', // Don't use Clearbit - let pptx use placeholder instead
     ipoDate: '',
     currency: quote.currency || 'USD',
     cik: '',

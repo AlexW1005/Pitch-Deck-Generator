@@ -164,41 +164,25 @@ export class PitchDeckBuilder {
       fill: { color: '1e3354' },
     });
 
-    // Company Logo - prominent on right side
-    try {
-      if (profile?.image && !profile.defaultImage) {
-        // Add logo in center-right area
-        slide.addImage({
-          path: profile.image,
-          x: 6.8,
-          y: 1.5,
-          w: 2.4,
-          h: 2.4,
-        });
-      } else {
-        // Placeholder for logo
-        slide.addShape('rect', {
-          x: 6.8,
-          y: 1.5,
-          w: 2.4,
-          h: 2.4,
-          fill: { color: '2a4a6a' },
-        });
-        slide.addText(profile?.symbol || 'LOGO', {
-          x: 6.8,
-          y: 2.4,
-          w: 2.4,
-          h: 0.6,
-          fontSize: 24,
-          bold: true,
-          color: '6b8eb8',
-          fontFace: this.theme.fontFamily.body,
-          align: 'center',
-        });
-      }
-    } catch (e) {
-      console.log('Could not add company logo');
-    }
+    // Company Logo placeholder (external images cause issues in pptxgenjs)
+    slide.addShape('rect', {
+      x: 6.8,
+      y: 1.5,
+      w: 2.4,
+      h: 2.4,
+      fill: { color: '2a4a6a' },
+    });
+    slide.addText(safeText(profile?.symbol || 'LOGO'), {
+      x: 6.8,
+      y: 2.4,
+      w: 2.4,
+      h: 0.6,
+      fontSize: 24,
+      bold: true,
+      color: '6b8eb8',
+      fontFace: this.theme.fontFamily.body,
+      align: 'center',
+    });
 
     // Photo placeholder text on right
     slide.addText('[ Company HQ / Product Image ]', {
@@ -994,22 +978,8 @@ export class PitchDeckBuilder {
       fill: { color: 'e8ecef' },
     });
 
-    // Add company logo if available
-    try {
-      if (profile?.image && !profile.defaultImage) {
-        slide.addImage({
-          path: profile.image,
-          x: 4.4,
-          y: 4.6,
-          w: 0.65,
-          h: 0.65,
-        });
-      }
-    } catch (e) {
-      console.log('Could not add logo to overview');
-    }
-
-    slide.addText('[ Add product/facility images ]', {
+    // Logo placeholder (external images removed to avoid loading errors)
+    slide.addText(safeText('[ Add company logo ]'), {
       x: 3.3,
       y: 4.75,
       w: 3.2,
