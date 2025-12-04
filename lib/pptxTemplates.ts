@@ -661,18 +661,18 @@ export class PitchDeckBuilder {
 
     const thesisBullets = [
       safeText(`${companyName} is a ${sector} company operating in ${industry}`),
-      safeText(`Strong competitive position with ${mktCapStr} market cap and established market presence`),
-      safeText('Key catalysts include [user to add: product launches, market expansion, margin improvement initiatives]'),
-      safeText(`Attractive valuation at ${peStr} P/E vs. historical average and peers`),
+      safeText(`Strong competitive position with ${mktCapStr} market cap`),
+      safeText('Key catalysts: [product launches, expansion, margin improvement]'),
+      safeText(`Attractive valuation at ${peStr} P/E vs. peers`),
     ];
 
     // Add each bullet point separately to avoid pptxgenjs text parsing issues
     thesisBullets.forEach((bullet, i) => {
       slide.addText(safeText('• ' + bullet), {
         x: 0.4,
-        y: 2.9 + (i * 0.25),
+        y: 2.9 + (i * 0.22),
         w: 9,
-        h: 0.25,
+        h: 0.22,
         fontSize: 8,
         color: this.theme.secondaryColor,
         fontFace: this.theme.fontFamily.body,
@@ -682,9 +682,9 @@ export class PitchDeckBuilder {
     // COMPANY SNAPSHOT - Bottom section
     slide.addText('COMPANY SNAPSHOT', {
       x: 0.3,
-      y: 3.85,
+      y: 4.0,
       w: 4.5,
-      h: 0.2,
+      h: 0.18,
       fontSize: 7,
       bold: true,
       color: '6b7c8a',
@@ -704,12 +704,12 @@ export class PitchDeckBuilder {
       const col = i % 2;
       const rowNum = Math.floor(i / 2);
       const x = 0.3 + (col * 2.3);
-      const y = 4.05 + (rowNum * 0.28);
+      const y = 4.2 + (rowNum * 0.24);
       slide.addText(safeText(row[0] + ':'), {
         x,
         y,
         w: 1,
-        h: 0.25,
+        h: 0.22,
         fontSize: 7,
         color: '6b7c8a',
         fontFace: this.theme.fontFamily.body,
@@ -718,7 +718,7 @@ export class PitchDeckBuilder {
         x: x + 1,
         y,
         w: 1.3,
-        h: 0.25,
+        h: 0.22,
         fontSize: 7,
         bold: true,
         color: this.theme.textColor,
@@ -729,9 +729,9 @@ export class PitchDeckBuilder {
     // KEY RISKS - right side of bottom
     slide.addText('KEY RISKS', {
       x: 5,
-      y: 3.85,
+      y: 4.0,
       w: 4.5,
-      h: 0.2,
+      h: 0.18,
       fontSize: 7,
       bold: true,
       color: '6b7c8a',
@@ -739,19 +739,19 @@ export class PitchDeckBuilder {
     });
 
     const risks = [
-      'Market/macro volatility and economic uncertainty',
-      'Competitive pressures and pricing dynamics',
-      'Execution risk on strategic initiatives',
-      'Regulatory and compliance considerations',
+      'Market/macro volatility',
+      'Competitive pressures',
+      'Execution risk',
+      'Regulatory considerations',
     ];
 
     // Add each risk bullet separately
     risks.forEach((risk, i) => {
       slide.addText(safeText('• ' + risk), {
         x: 5,
-        y: 4.05 + (i * 0.2),
+        y: 4.2 + (i * 0.18),
         w: 4.5,
-        h: 0.2,
+        h: 0.18,
         fontSize: 7,
         color: this.theme.secondaryColor,
         fontFace: this.theme.fontFamily.body,
@@ -1136,17 +1136,17 @@ export class PitchDeckBuilder {
 
     slide.addText('Key Metrics at a Glance', {
       x: 0.5,
-      y: 0.3,
+      y: 0.2,
       w: 9,
-      h: 0.5,
-      fontSize: 24,
+      h: 0.4,
+      fontSize: 22,
       bold: true,
       color: this.theme.textColor,
       fontFace: this.theme.fontFamily.heading,
     });
 
     // Top KPI boxes - 6 metrics in a row
-    const kpiY = 0.55;
+    const kpiY = 0.7;
     const kpis = [
       { label: 'MKT CAP', value: safeText(profile?.mktCap ? formatLargeNumber(profile.mktCap) : 'N/A'), color: this.theme.primaryColor },
       { label: 'PRICE', value: safeText(profile?.price ? `$${Number(profile.price).toFixed(2)}` : 'N/A'), color: this.theme.accentColor },
