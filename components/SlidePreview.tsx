@@ -288,10 +288,24 @@ export const SlidePreview: React.FC<SlidePreviewProps> = ({
   );
 
   return (
-    <div className="flex gap-4 h-full">
-      {/* Thumbnail sidebar */}
-      <div className="w-32 flex-shrink-0 overflow-y-auto scrollbar-thin space-y-2 pr-2">
-        {slides.map((slide, index) => (
+    <div className="flex flex-col h-full">
+      {/* Preview Notice Banner */}
+      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4 flex items-start gap-3">
+        <svg className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>
+          <p className="text-sm font-medium text-amber-800">Simplified Preview</p>
+          <p className="text-xs text-amber-700 mt-0.5">
+            This is a simplified preview. <strong>Download the PPTX file</strong> to see the full professionally formatted deck with all data, charts, and Lazard-style design.
+          </p>
+        </div>
+      </div>
+
+      <div className="flex gap-4 flex-1 min-h-0">
+        {/* Thumbnail sidebar */}
+        <div className="w-32 flex-shrink-0 overflow-y-auto scrollbar-thin space-y-2 pr-2">
+          {slides.map((slide, index) => (
           <button
             key={slide.id}
             onClick={() => setSelectedSlide(index)}
@@ -325,6 +339,7 @@ export const SlidePreview: React.FC<SlidePreviewProps> = ({
             )}
           </p>
         </div>
+      </div>
       </div>
     </div>
   );

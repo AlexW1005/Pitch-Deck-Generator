@@ -270,10 +270,18 @@ export default function Home() {
               {/* Export Panel */}
               <div className="space-y-6">
                 {/* Export Card */}
-                <div className="card-lazard p-6">
-                  <h3 className="text-lg font-semibold text-lazard-navy mb-4">
-                    Export
-                  </h3>
+                <div className="card-lazard p-6 border-2 border-lazard-accent">
+                  <div className="flex items-center gap-2 mb-2">
+                    <svg className="w-5 h-5 text-lazard-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    <h3 className="text-lg font-semibold text-lazard-navy">
+                      Download Full Deck
+                    </h3>
+                  </div>
+                  <p className="text-xs text-lazard-gray mb-4">
+                    The PPTX file contains the complete Lazard-style deck with all data, professional formatting, and embedded charts.
+                  </p>
                   <PptxExporter
                     companyData={companyData}
                     formData={formData}
