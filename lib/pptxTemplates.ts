@@ -1158,12 +1158,12 @@ export class PitchDeckBuilder {
     // Top KPI boxes - 6 metrics in a row
     const kpiY = 0.55;
     const kpis = [
-      { label: 'MKT CAP', value: profile?.mktCap ? formatLargeNumber(profile.mktCap) : 'N/A', color: this.theme.primaryColor },
-      { label: 'PRICE', value: profile?.price ? `$${profile.price.toFixed(2)}` : 'N/A', color: this.theme.accentColor },
-      { label: 'P/E', value: ratios?.peRatioTTM ? `${ratios.peRatioTTM.toFixed(1)}x` : 'N/A', color: '3d4f5f' },
-      { label: 'EV/EBITDA', value: ratios?.enterpriseValueMultipleTTM ? `${ratios.enterpriseValueMultipleTTM.toFixed(1)}x` : 'N/A', color: '6b7c8a' },
-      { label: 'DIV YIELD', value: ratios?.dividendYieldTTM ? `${(ratios.dividendYieldTTM * 100).toFixed(1)}%` : 'N/A', color: '16a34a' },
-      { label: 'BETA', value: profile?.beta ? profile.beta.toFixed(2) : 'N/A', color: '9ca8b3' },
+      { label: 'MKT CAP', value: safeText(profile?.mktCap ? formatLargeNumber(profile.mktCap) : 'N/A'), color: this.theme.primaryColor },
+      { label: 'PRICE', value: safeText(profile?.price ? `$${Number(profile.price).toFixed(2)}` : 'N/A'), color: this.theme.accentColor },
+      { label: 'P/E', value: safeText(ratios?.peRatioTTM ? `${Number(ratios.peRatioTTM).toFixed(1)}x` : 'N/A'), color: '3d4f5f' },
+      { label: 'EV/EBITDA', value: safeText(ratios?.enterpriseValueMultipleTTM ? `${Number(ratios.enterpriseValueMultipleTTM).toFixed(1)}x` : 'N/A'), color: '6b7c8a' },
+      { label: 'DIV YIELD', value: safeText(ratios?.dividendYieldTTM ? `${(Number(ratios.dividendYieldTTM) * 100).toFixed(1)}%` : 'N/A'), color: '16a34a' },
+      { label: 'BETA', value: safeText(profile?.beta ? Number(profile.beta).toFixed(2) : 'N/A'), color: '9ca8b3' },
     ];
 
     kpis.forEach((kpi, i) => {
@@ -1175,7 +1175,7 @@ export class PitchDeckBuilder {
         h: 0.65,
         fill: { color: kpi.color },
       });
-      slide.addText(kpi.label, {
+      slide.addText(safeText(kpi.label), {
         x,
         y: kpiY + 0.05,
         w: 1.45,
@@ -1185,7 +1185,7 @@ export class PitchDeckBuilder {
         fontFace: this.theme.fontFamily.body,
         align: 'center',
       });
-      slide.addText(kpi.value, {
+      slide.addText(safeText(kpi.value), {
         x,
         y: kpiY + 0.25,
         w: 1.45,
@@ -1220,12 +1220,12 @@ export class PitchDeckBuilder {
       });
 
       const altMetrics = [
-        ['Beta', profile?.beta ? profile.beta.toFixed(2) : 'N/A'],
-        ['52-Week Range', profile?.range || 'N/A'],
-        ['Average Volume', profile?.volAvg && !isNaN(Number(profile.volAvg)) ? Number(profile.volAvg).toLocaleString() : 'N/A'],
-        ['Dividend Yield', ratios?.dividendYieldTTM ? formatPercentage(ratios.dividendYieldTTM * 100) : 'N/A'],
-        ['ROE', ratios?.returnOnEquityTTM ? formatPercentage(ratios.returnOnEquityTTM * 100) : 'N/A'],
-        ['Debt/Equity', ratios?.debtEquityRatioTTM ? formatRatio(ratios.debtEquityRatioTTM) : 'N/A'],
+        ['Beta', safeText(profile?.beta ? Number(profile.beta).toFixed(2) : 'N/A')],
+        ['52-Week Range', safeText(profile?.range || 'N/A')],
+        ['Average Volume', safeText(profile?.volAvg && !isNaN(Number(profile.volAvg)) ? Number(profile.volAvg).toLocaleString() : 'N/A')],
+        ['Dividend Yield', safeText(ratios?.dividendYieldTTM ? formatPercentage(Number(ratios.dividendYieldTTM) * 100) : 'N/A')],
+        ['ROE', safeText(ratios?.returnOnEquityTTM ? formatPercentage(Number(ratios.returnOnEquityTTM) * 100) : 'N/A')],
+        ['Debt/Equity', safeText(ratios?.debtEquityRatioTTM ? formatRatio(Number(ratios.debtEquityRatioTTM)) : 'N/A')],
       ];
 
       altMetrics.forEach((metric, i) => {
@@ -1234,7 +1234,7 @@ export class PitchDeckBuilder {
         const x = 0.7 + (col * 4.5);
         const y = 2.5 + (row * 0.7);
         
-        slide.addText(metric[0], {
+        slide.addText(safeText(metric[0]), {
           x,
           y,
           w: 2,
@@ -1243,7 +1243,7 @@ export class PitchDeckBuilder {
           color: '6b7c8a',
           fontFace: this.theme.fontFamily.body,
         });
-        slide.addText(metric[1], {
+        slide.addText(safeText(metric[1]), {
           x: x + 2,
           y,
           w: 2,
