@@ -428,7 +428,7 @@ export class PitchDeckBuilder {
 
     const tocText = items.map((item, i) => `${i + 1}. ${item}`).join('\n');
 
-    slide.addText(tocText, {
+    slide.addText(safeText(tocText), {
       x: 0.5,
       y: 1.3,
       w: 5,
@@ -436,7 +436,6 @@ export class PitchDeckBuilder {
       fontSize: 12,
       color: this.theme.secondaryColor,
       fontFace: this.theme.fontFamily.body,
-      bullet: false,
       lineSpacingMultiple: 1.5,
     });
 
@@ -509,17 +508,17 @@ export class PitchDeckBuilder {
     const upside = currentPrice > 0 && targetPrice > 0 ? ((targetPrice - currentPrice) / currentPrice * 100) : 0;
 
     const pricingData = [
-      ['Rating', this.formData.rating, ratingColor],
-      ['Target Price', targetPrice > 0 ? `$${targetPrice.toFixed(2)}` : 'TBD', ''],
-      ['Current Price', currentPrice > 0 ? `$${currentPrice.toFixed(2)}` : 'N/A', ''],
-      ['Upside/(Downside)', currentPrice > 0 && targetPrice > 0 ? `${upside >= 0 ? '+' : ''}${upside.toFixed(1)}%` : 'N/A', upside >= 0 ? '16a34a' : 'dc2626'],
-      ['Time Horizon', `${this.formData.timeHorizon} months`, ''],
-      ['52-Week Range', profile?.range || 'N/A', ''],
+      ['Rating', safeText(this.formData.rating), ratingColor],
+      ['Target Price', safeText(targetPrice > 0 ? `$${targetPrice.toFixed(2)}` : 'TBD'), ''],
+      ['Current Price', safeText(currentPrice > 0 ? `$${currentPrice.toFixed(2)}` : 'N/A'), ''],
+      ['Upside/(Downside)', safeText(currentPrice > 0 && targetPrice > 0 ? `${upside >= 0 ? '+' : ''}${upside.toFixed(1)}%` : 'N/A'), upside >= 0 ? '16a34a' : 'dc2626'],
+      ['Time Horizon', safeText(`${this.formData.timeHorizon} months`), ''],
+      ['52-Week Range', safeText(profile?.range || 'N/A'), ''],
     ];
 
     pricingData.forEach((row, i) => {
       const y = 0.82 + (i * 0.28);
-      slide.addText(row[0], {
+      slide.addText(safeText(row[0]), {
         x: 0.3,
         y,
         w: 1.4,
@@ -528,7 +527,7 @@ export class PitchDeckBuilder {
         color: '6b7c8a',
         fontFace: this.theme.fontFamily.body,
       });
-      slide.addText(row[1], {
+      slide.addText(safeText(row[1]), {
         x: 1.7,
         y,
         w: 1.3,
@@ -553,17 +552,17 @@ export class PitchDeckBuilder {
     });
 
     const valuationData = [
-      ['Market Cap', profile?.mktCap ? formatLargeNumber(profile.mktCap) : 'N/A'],
-      ['Enterprise Value', ratios?.enterpriseValueMultipleTTM ? 'See metrics' : 'N/A'],
-      ['P/E (TTM)', ratios?.peRatioTTM ? `${ratios.peRatioTTM.toFixed(1)}x` : 'N/A'],
-      ['EV/EBITDA', ratios?.enterpriseValueMultipleTTM ? `${ratios.enterpriseValueMultipleTTM.toFixed(1)}x` : 'N/A'],
-      ['P/S (TTM)', ratios?.priceToSalesRatioTTM ? `${ratios.priceToSalesRatioTTM.toFixed(1)}x` : 'N/A'],
-      ['P/B (TTM)', ratios?.priceToBookRatioTTM ? `${ratios.priceToBookRatioTTM.toFixed(1)}x` : 'N/A'],
+      ['Market Cap', safeText(profile?.mktCap ? formatLargeNumber(profile.mktCap) : 'N/A')],
+      ['Enterprise Value', safeText(ratios?.enterpriseValueMultipleTTM ? 'See metrics' : 'N/A')],
+      ['P/E (TTM)', safeText(ratios?.peRatioTTM ? `${ratios.peRatioTTM.toFixed(1)}x` : 'N/A')],
+      ['EV/EBITDA', safeText(ratios?.enterpriseValueMultipleTTM ? `${ratios.enterpriseValueMultipleTTM.toFixed(1)}x` : 'N/A')],
+      ['P/S (TTM)', safeText(ratios?.priceToSalesRatioTTM ? `${ratios.priceToSalesRatioTTM.toFixed(1)}x` : 'N/A')],
+      ['P/B (TTM)', safeText(ratios?.priceToBookRatioTTM ? `${ratios.priceToBookRatioTTM.toFixed(1)}x` : 'N/A')],
     ];
 
     valuationData.forEach((row, i) => {
       const y = 0.82 + (i * 0.28);
-      slide.addText(row[0], {
+      slide.addText(safeText(row[0]), {
         x: 3.2,
         y,
         w: 1.4,
@@ -572,7 +571,7 @@ export class PitchDeckBuilder {
         color: '6b7c8a',
         fontFace: this.theme.fontFamily.body,
       });
-      slide.addText(row[1], {
+      slide.addText(safeText(row[1]), {
         x: 4.6,
         y,
         w: 1.2,
@@ -598,17 +597,17 @@ export class PitchDeckBuilder {
 
     const latestIncome = income[0];
     const operatingData = [
-      ['Revenue (LTM)', latestIncome ? formatLargeNumber(latestIncome.revenue) : 'N/A'],
-      ['Gross Margin', ratios?.grossProfitMarginTTM ? `${(ratios.grossProfitMarginTTM * 100).toFixed(1)}%` : 'N/A'],
-      ['EBITDA Margin', latestIncome && latestIncome.revenue > 0 ? `${((latestIncome.ebitda / latestIncome.revenue) * 100).toFixed(1)}%` : 'N/A'],
-      ['Net Margin', ratios?.netProfitMarginTTM ? `${(ratios.netProfitMarginTTM * 100).toFixed(1)}%` : 'N/A'],
-      ['ROE', ratios?.returnOnEquityTTM ? `${(ratios.returnOnEquityTTM * 100).toFixed(1)}%` : 'N/A'],
-      ['Debt/Equity', ratios?.debtEquityRatioTTM ? `${ratios.debtEquityRatioTTM.toFixed(2)}x` : 'N/A'],
+      ['Revenue (LTM)', safeText(latestIncome ? formatLargeNumber(latestIncome.revenue) : 'N/A')],
+      ['Gross Margin', safeText(ratios?.grossProfitMarginTTM ? `${(ratios.grossProfitMarginTTM * 100).toFixed(1)}%` : 'N/A')],
+      ['EBITDA Margin', safeText(latestIncome && latestIncome.revenue > 0 && latestIncome.ebitda ? `${((latestIncome.ebitda / latestIncome.revenue) * 100).toFixed(1)}%` : 'N/A')],
+      ['Net Margin', safeText(ratios?.netProfitMarginTTM ? `${(ratios.netProfitMarginTTM * 100).toFixed(1)}%` : 'N/A')],
+      ['ROE', safeText(ratios?.returnOnEquityTTM ? `${(ratios.returnOnEquityTTM * 100).toFixed(1)}%` : 'N/A')],
+      ['Debt/Equity', safeText(ratios?.debtEquityRatioTTM ? `${ratios.debtEquityRatioTTM.toFixed(2)}x` : 'N/A')],
     ];
 
     operatingData.forEach((row, i) => {
       const y = 0.82 + (i * 0.28);
-      slide.addText(row[0], {
+      slide.addText(safeText(row[0]), {
         x: 6.2,
         y,
         w: 1.5,
@@ -617,7 +616,7 @@ export class PitchDeckBuilder {
         color: '6b7c8a',
         fontFace: this.theme.fontFamily.body,
       });
-      slide.addText(row[1], {
+      slide.addText(safeText(row[1]), {
         x: 7.7,
         y,
         w: 1.5,
@@ -691,12 +690,12 @@ export class PitchDeckBuilder {
     });
 
     const snapshotData = [
-      ['Sector', profile?.sector || 'N/A'],
-      ['Industry', profile?.industry || 'N/A'],
-      ['Headquarters', `${profile?.city || ''}, ${profile?.state || profile?.country || ''}`],
-      ['CEO', profile?.ceo || 'N/A'],
-      ['Employees', profile?.fullTimeEmployees && !isNaN(parseInt(profile.fullTimeEmployees)) ? parseInt(profile.fullTimeEmployees).toLocaleString() : 'N/A'],
-      ['Founded/IPO', profile?.ipoDate || 'N/A'],
+      ['Sector', safeText(profile?.sector || 'N/A')],
+      ['Industry', safeText(profile?.industry || 'N/A')],
+      ['Headquarters', safeText(`${profile?.city || ''}, ${profile?.state || profile?.country || ''}`)],
+      ['CEO', safeText(profile?.ceo || 'N/A')],
+      ['Employees', safeText(profile?.fullTimeEmployees && !isNaN(parseInt(profile.fullTimeEmployees)) ? parseInt(profile.fullTimeEmployees).toLocaleString() : 'N/A')],
+      ['Founded/IPO', safeText(profile?.ipoDate || 'N/A')],
     ];
 
     snapshotData.forEach((row, i) => {
@@ -704,7 +703,7 @@ export class PitchDeckBuilder {
       const rowNum = Math.floor(i / 2);
       const x = 0.3 + (col * 2.3);
       const y = 4.05 + (rowNum * 0.28);
-      slide.addText(row[0] + ':', {
+      slide.addText(safeText(row[0] + ':'), {
         x,
         y,
         w: 1,
@@ -713,7 +712,7 @@ export class PitchDeckBuilder {
         color: '6b7c8a',
         fontFace: this.theme.fontFamily.body,
       });
-      slide.addText(row[1], {
+      slide.addText(safeText(row[1]), {
         x: x + 1,
         y,
         w: 1.3,
