@@ -40,6 +40,33 @@ function safeText(value: any): string {
   return String(value) || 'N/A';
 }
 
+/**
+ * Validate and fix table rows before passing to pptxgenjs
+ */
+function validateTableRows(rows: any[][]): any[][] {
+  return rows.map((row, rowIdx) => 
+    row.map((cell, cellIdx) => {
+      // If cell is just a string, wrap it
+      if (typeof cell === 'string') {
+        return { text: cell };
+      }
+      // If cell is an object with text property
+      if (cell && typeof cell === 'object') {
+        const textValue = cell.text;
+        // Ensure text is a string
+        if (typeof textValue !== 'string') {
+          console.warn(`Invalid cell text at row ${rowIdx}, cell ${cellIdx}:`, textValue);
+          return { ...cell, text: safeText(textValue) };
+        }
+        return cell;
+      }
+      // Fallback
+      console.warn(`Invalid cell at row ${rowIdx}, cell ${cellIdx}:`, cell);
+      return { text: 'N/A' };
+    })
+  );
+}
+
 // ============================================
 // Theme Configuration
 // ============================================
@@ -1281,7 +1308,7 @@ export class PitchDeckBuilder {
       rows.push(row);
     });
 
-    slide.addTable(rows, {
+    slide.addTable(validateTableRows(rows), {
       x: 0.5,
       y: 2.3,
       w: 9,
@@ -1381,7 +1408,7 @@ export class PitchDeckBuilder {
     });
     rows.push(netIncRow);
 
-    slide.addTable(rows, {
+    slide.addTable(validateTableRows(rows), {
       x: 0.5,
       y: 1.2,
       w: 9,
@@ -1474,7 +1501,7 @@ export class PitchDeckBuilder {
       ]);
     });
 
-    slide.addTable(rows, {
+    slide.addTable(validateTableRows(rows), {
       x: 0.5,
       y: 1.2,
       w: 9,
